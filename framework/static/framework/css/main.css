@@ -1,0 +1,13 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	font-family: "Helvetica";
+	font-size: 14px;
+}
+
+
+.error{
+	color: red;
+	font-style: italic;
+}
+

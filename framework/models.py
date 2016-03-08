@@ -28,8 +28,9 @@ class App(models.Model):
     version = models.CharField(max_length=60)
     icon_url = models.CharField(blank=True, max_length=256)
     # URL that we send a GET request to in order to find out what
-    # settings the user can set. If blank, no special settings
-    # are needed
+    # settings the user can set. Also the URL we send a POST request
+    # with the user chosen settings for verification. If blank,
+    # no special settings are needed
     settings_url = models.CharField(blank=True, max_length=256)
     # URL that we send the request to in order to get the actual
     # data from the app

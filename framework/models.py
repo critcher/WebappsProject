@@ -11,6 +11,7 @@ class Calendar(models.Model):
 
 class Event(models.Model):
     description = models.CharField(blank=True, max_length=100)
+    name = models.CharField(blank=True, max_length=60)
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField()
     icon_url = models.CharField(blank=True, max_length=256)

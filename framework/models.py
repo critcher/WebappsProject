@@ -6,3 +6,6 @@ from django.core.validators import MaxValueValidator
 
 class CalendarUser(models.Model):
     user = models.OneToOneField(User)
+
+class Calendar(models.Model):
+    owner = models.OneToOneField(CalendarUser, on_delete=models.CASCADE)

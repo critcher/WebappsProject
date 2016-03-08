@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from . import views
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from webapps import settings
+from project import settings
 
 
 urlpatterns = [
@@ -30,7 +30,6 @@ urlpatterns = [
     url(r'^editprofile/$', views.editProfile, name='editprofile'),
     url(r'^confirm-registration/(?P<username>[a-zA-Z0-9_@\+\-]+)/(?P<token>[a-z0-9\-]+)$',
         views.confirm_registration, name='confirm'),
-    url(r'^', include('django.contrib.auth.urls')),
     url(r'^', views.home, name='main'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

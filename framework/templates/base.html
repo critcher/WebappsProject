@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>A Calendar of Stuff</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static "framework/css/bootstrap.min.css" %}" >
+    <link rel="stylesheet" type="text/css" href="{% static "framework/css/main.css" %}">
+</head>
+<body>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-3">
+			{%block nav%}
+		
+
+			{%endblock%}
+		</div>
+		<div class="col-xs-6">
+			{% block content %}
+
+
+			{%endblock%}
+		</div>
+		
+  	</div>
+  	<div class="row">
+  		<div class="col-xs-6">
+  			{%for error in errors%}
+  				<div class="error">{{error}}</div>
+  			{%endfor%}
+  		</div>
+  	</div>
+</div>
+
+
+
+</body>
+</html>

@@ -26,8 +26,6 @@ urlpatterns = [
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login',
         name='logout'),
     url(r'^register/$', views.register, name='register'),
-    url(r'^profile/(?P<author>\w{0,50})/$', views.profile, name='profile'),
-    url(r'^editprofile/$', views.editProfile, name='editprofile'),
     url(r'^confirm-registration/(?P<username>[a-zA-Z0-9_@\+\-]+)/(?P<token>[a-z0-9\-]+)$',
         views.confirm_registration, name='confirm'),
     url(r'^', views.home, name='main'),

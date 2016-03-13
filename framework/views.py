@@ -11,10 +11,11 @@ from mimetypes import guess_type
 from django.core import serializers
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from models import CalendarUser
 # s3
 from s3 import s3_upload
 
-# Create your views here.
+# Create your views here
 
 
 def home(request):
@@ -24,6 +25,35 @@ def home(request):
     # in template check for user.is_authenticated
     context['user'] = request.user
     return render(request, 'main.html', context)
+
+
+def profile(request, userArg):
+    context = {}
+    context['errors'] = []
+    try:
+        userMatch = User.objects.get(username__exact=userArg)
+    except ObjectDoesNotExist:
+        context['errors'].append("could not find object")
+        return render(request, 'main.html', context)
+    except MultipleObjectsReturned:
+        context['errors'].append("multiple objects returned")
+        return render(request, 'main.html', context)
+    context['author'] = userArg
+    context['firstname'] = userMatch.first_name
+    context['lastname'] = userMatch.last_name
+    try:
+        profMatch = CalendarUser.objects.get(user=userMatch)
+    except ObjectDoesNotExist:
+        context['errors'].append("You dont have a profile yet!")
+        return redirect(reverse("editprofile"))
+    except MultipleObjectsReturned:
+        context['errors'].append("multiple objects returned")
+        return render(request, 'main.html', context)
+
+    context['bio'] = profMatch.bio
+    context['age'] = profMatch.age
+    context['profile'] = profMatch
+    return render(request, 'profile.html', context)
 
 
 @transaction.atomic
@@ -47,20 +77,27 @@ def register(request):
                                               last_name=form.cleaned_data[
                                                   'last_name'],
                                               email=form.cleaned_data['email'])
+
     registeredUser.backend = 'django.contrib.auth.backends.ModelBackend'
-    registeredUser.is_active = False
+    if True:
+        registeredUser.is_active = True
+    else:
+        registeredUser.is_active = False
+
     registeredUser.save()
+    newUserProfile = CalendarUser.objects.create(user=registeredUser)
+    newUserProfile.save()
 
     token = default_token_generator.make_token(registeredUser)
     email_body = """
     Please click the link below to
     verify your email address and complete the registration of your account:
     http://%s%s""" % (request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
-
-    send_mail(subject="Verify your email address",
-              message=email_body,
-              from_email="LETS_MAKE_AN_EMAIL_FOR_THIS@GMAIL.COM",
-              recipient_list=[registeredUser.email])
+    if False:
+        send_mail(subject="Verify your email address",
+                  message=email_body,
+                  from_email="bomocho@GMAIL.COM",
+                  recipient_list=[registeredUser.email])
 
     context['email'] = form.cleaned_data['email']
     context['errors'].append("Needs confirmation!")

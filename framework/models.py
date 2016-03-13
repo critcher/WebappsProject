@@ -5,7 +5,7 @@ from django.db import models
 
 
 class CalendarUser(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='userPointer')
 
 
 class Calendar(models.Model):

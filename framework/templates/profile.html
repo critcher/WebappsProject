@@ -5,32 +5,7 @@
 {%endblock%}
 
 {%block content%}
-{% if invaliduser %}
 
-	<div class="row">
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="error">
-					<h3> User {{ author }} does not exist! </h3>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-3 ">
-				<div class="row">
-					<div class="col-xs-12">
-						<a class="btn btn-default" href="{% url 'main' %}">Home</a>
-					</div>
-					<div class="col-xs-12">
-						<a class="btn btn-default" href="{% url 'logout' %}">Logout</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-{% else %}
 
 
 	<div class="row">
@@ -56,56 +31,4 @@
 
 
 
-	<div class="row">
-		<div class="row">
-			<div class="col-xs-12">
-				<h3>Posts by {{author}} :</h3>
-				{% for post in feed %}
-				<div class="post">
-					<div class="row">
-						<div class="col-xs-12">
-							<img src="{% url 'image' post.author %}" width=55px />
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-xs-12">
-							"{{post.text}}"
-							<br>-<a href="{% url 'profile' post.author%}">{{post.author}}</a> at {{post.created}}
-						</div>
-					</div>
-					
-				</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
-
-	
-	
-
-
-	<div class="row">
-		<div class="col-xs-3 ">
-			<div class="row">
-				<div class="col-xs-12">
-					<a class="btn btn-default" href="{% url 'main' %}">Home</a>
-				</div>
-				{%if user.is_active %}
-				<div class="col-xs-12">
-					<a class="btn btn-default" href="{% url 'editprofile' %}">Edit Profile</a>
-				</div>
-				{%endif%}
-				{%if user.username != author %}
-				<div class="col-xs-12">
-					<a class="btn btn-default" href="{% url 'follow' author%}">Follow this user</a>
-				</div>
-				{%endif%}
-				<div class="col-xs-12">
-					<a class="btn btn-default" href="{% url 'logout' %}">Logout</a>
-				</div>
-			</div>
-		</div>
-	</div>
-
-{% endif %}
 {%endblock%}

@@ -1,0 +1,46 @@
+
+
+	<div class="row">
+		<div class="col-xs-12 text-center">
+			<h3> Nav Panel </h3>
+		</div>
+	</div>
+	
+	{% if not user.is_anonymous %}
+	<div class="row">
+		<div class="col-xs-12 text-center">
+			I would like to <a href="{% url 'logout' %}"> Logout! </a>
+		</div>
+	</div>
+	{%else%}
+	<div class="row">
+		<div class="col-xs-12 text-center">
+			I would like to <a href="{% url 'login' %}"> Login! </a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12 text-center">
+			I would like to <a href="{% url 'register' %}"> Register! </a>
+		</div>
+	</div>
+	{%endif%}
+
+	{% if not user.is_anonymous %}
+		<div class="row">
+			<div class="col-xs-12 text-center">
+				I would like to look at my <a href="{% url 'profile' user%}"> Profile! </a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 text-center">
+			Hello {{user}}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-12 text-center">
+				<a class="btn btn-default" href="{% url 'logout' %}">Logout</a>
+			</div>
+		</div>
+	{%endif%}
+

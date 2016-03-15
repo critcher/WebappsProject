@@ -1,0 +1,34 @@
+{%extends "base.html"%}
+
+{%block nav%}
+{%include "nav.html"%}
+{%endblock%}
+
+{%block content%}
+
+
+
+	<div class="row">
+		<div class="row">
+			<div class="col-xs-12">
+				<h3>This is the profile page of {{ author }}: </h3>
+				{{firstname}} {{lastname}}  Age: {{profile.age}}
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">
+		Bio: {{bio}}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">
+		<img src="{{profile.picture_url}}" width=200px />
+		</div>
+	</div>
+
+
+
+{%endblock%}

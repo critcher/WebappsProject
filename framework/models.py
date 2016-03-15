@@ -3,11 +3,14 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
+
 class CalendarUser(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='userPointer')
+
 
 class Calendar(models.Model):
     owner = models.OneToOneField(CalendarUser, on_delete=models.CASCADE)
+
 
 class Event(models.Model):
     description = models.CharField(blank=True, max_length=100)
@@ -18,7 +21,9 @@ class Event(models.Model):
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE)
     # A handle to the AppSettings instance that created this event.
     # Blank if this event is a static calendar event.
-    source = models.ForeignKey(AppSettings, blank=True, on_delete=models.CASCADE)
+    source = models.ForeignKey(
+        'AppSettings', blank=True, on_delete=models.CASCADE)
+
 
 class App(models.Model):
     description = models.CharField(blank=True, max_length=1000)
@@ -38,6 +43,7 @@ class App(models.Model):
     # True if the app should be allowed to be added to a calendar
     # multiple times (with different settings, maybe)
     allow_duplicates = models.BooleanField(default=True)
+
 
 class AppSettings(models.Model):
     settings_json = models.TextField()

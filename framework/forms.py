@@ -6,17 +6,18 @@ from django.core.validators import validate_email
 
 class RegisterForm(forms.Form):
     widgetForCSS = forms.TextInput(attrs={'class': 'form-control'})
+    passwordWidget = forms.PasswordInput(attrs={'class': 'form-control'})
     username = forms.CharField(
         max_length=20, label="Username", widget=widgetForCSS)
     password1 = forms.CharField(
-        max_length=24, label="Password", widget=widgetForCSS)
+        max_length=24, label="Password", widget=passwordWidget)
     password2 = forms.CharField(
-        max_length=24, label="Re-type Password", widget=widgetForCSS)
+        max_length=24, label="Re-type Password", widget=passwordWidget)
     first_name = forms.CharField(
         max_length=24, label="First Name", widget=widgetForCSS)
     last_name = forms.CharField(
         max_length=24, label="Last Name", widget=widgetForCSS)
-    email = forms.CharField(max_length=40,
+    email = forms.CharField(max_length=40, widget=widgetForCSS,
                             validators=[validate_email])
 
     def clean(self):

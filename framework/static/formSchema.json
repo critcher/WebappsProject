@@ -1,0 +1,89 @@
+{
+    "required": ["fields"],
+    "properties": {
+        "fields": {
+            "type": "array",
+            "items": {
+              "allOf":[
+                { "$ref": "#/definitions/Field" },
+                {"oneOf": [
+                  { "$ref": "#/definitions/BooleanField" },
+                  { "$ref": "#/definitions/TextField" },
+                  { "$ref": "#/definitions/ChoiceField" },
+                  { "$ref": "#/definitions/DateField" },
+                  { "$ref": "#/definitions/TimeField" },
+                  { "$ref": "#/definitions/DecimalField" }
+                ]}
+              ]
+            }
+        }
+    },
+
+    "definitions": {
+      "Field": {
+            "type": "object",
+            "required": ["name", "required", "type"],
+            "properties": {
+                "name": {"type": "string"},
+                "required": {"type": "boolean"}
+            }
+        },
+
+        "BooleanField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "boolean" ] },
+                "default": {"type": "boolean"}
+            }
+        },
+
+        "TextField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "text" ] },
+                "default": {"type": "string"},
+                "lines": {"type": "integer"}
+            }
+        },
+
+        "ChoiceField": {
+            "type": "object",
+            "required": ["choices"],
+            "properties": {
+                "type": { "enum": [ "choice" ] },
+                "default": {"type": "string"},
+                "choices": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+            }
+        },
+
+        "DateField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "date" ] },
+                "default": {"type": "string"}
+            }
+        },
+
+        "TimeField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "time" ] },
+                "default": {"type": "string"}
+            }
+        },
+
+        "DecimalField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "number" ] },
+                "default": {"type": "number"}
+            }
+        }
+    }
+}

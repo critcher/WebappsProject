@@ -12,21 +12,7 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-6 col-xs-offset-3">
-			<form class="form-vertical" method="post" action="{% url 'register' %}">
-				{% for error in form.non_field_errors %}
-					<div class="error"> {{ error }} </div>
-				{% endfor %}
-
-				{% for field in form %}
-					<div class="form-group">
-						{{field.label_tag}}
-						{{field}}
-						{{field.errors}}
-					</div>
-				{% endfor %}
-				<input type="submit" class="btn btn-default" value="Register" />
-				{% csrf_token %}
-			</form>
+			{% include 'form.html' with submit_string="Register" form_action='register' %}
 		</div>
 	</div>
 	<div class="row">

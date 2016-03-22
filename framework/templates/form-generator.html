@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>A Calendar of Stuff</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static "framework/css/bootstrap.min.css" %}" >
+    <link rel="stylesheet" type="text/css" href="{% static "framework/css/main.css" %}">
+</head>
+<body>
+
+	<div class="row">
+		<div class="col-xs-6">
+			<h4>Schema:</h4>
+			<pre>{
+    "required": ["fields"],
+    "properties": {
+        "fields": {
+            "type": "array",
+            "items": {
+              "allOf":[
+                { "$ref": "#/definitions/Field" },
+                {"oneOf": [
+                  { "$ref": "#/definitions/BooleanField" },
+                  { "$ref": "#/definitions/TextField" },
+                  { "$ref": "#/definitions/ChoiceField" },
+                  { "$ref": "#/definitions/DateField" },
+                  { "$ref": "#/definitions/TimeField" },
+                  { "$ref": "#/definitions/DecimalField" }
+                ]}
+              ]
+            }
+        }
+    },
+
+    "definitions": {
+      "Field": {
+            "type": "object",
+            "required": ["name", "required", "type"],
+            "properties": {
+                "name": {"type": "string"},
+                "required": {"type": "boolean"}
+            }
+        },
+
+        "BooleanField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "boolean" ] },
+                "default": {"type": "boolean"}
+            }
+        },
+
+        "TextField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "text" ] },
+                "default": {"type": "string"}
+            }
+        },
+
+        "ChoiceField": {
+            "type": "object",
+            "required": ["choices"],
+            "properties": {
+                "type": { "enum": [ "choice" ] },
+                "default": {"type": "string"},
+                "choices": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+            }
+        },
+
+        "DateField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "date" ] },
+                "default": {"type": "string"}
+            }
+        },
+
+        "TimeField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "time" ] },
+                "default": {"type": "string"}
+            }
+        },
+
+        "DecimalField": {
+            "type": "object",
+            "properties": {
+                "type": { "enum": [ "number" ] },
+                "default": {"type": "number"}
+            }
+        }
+    }
+}</pre>
+		</div>
+		<div class="col-xs-6">
+			<form class="form-vertical" method="post" action="">
+			    {% for error in form_errors %}
+			        <div class="error"> {{ error }} </div>
+			    {% endfor %}
+		        <div class="form-group">
+		            <label for="id_json">JSON:</label>
+		            <textarea id="id_json" name="json_string" rows="15" cols="80" wrap="soft">{{json_string}}</textarea>
+		        </div>
+			    <input type="submit" class="btn btn-default" value="Refresh" />
+			    {% csrf_token %}
+			</form>
+			{{generated_form}}
+		</div>
+	</div>
+
+</body>
+</html>

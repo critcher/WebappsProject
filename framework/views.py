@@ -12,6 +12,8 @@ from django.core import serializers
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from models import CalendarUser
+import jsonschema
+from appForms import convertJsonToForm
 # s3
 from s3 import s3_upload
 
@@ -116,3 +118,34 @@ def confirm_registration(request, username, token):
     user.is_active = True
     user.save()
     return render(request, 'main.html', {'errors': ["confirmed!"]})
+
+def testAppForm(request):
+    context = {}
+    context['form_errors'] = []
+    context['generated_form'] = ''
+    
+    if request.method == 'GET':
+        context['json_string'] = '{\n\
+  "fields": [\n\
+                 {"type": "boolean", "name": "field1", "required": true, "default": true},\n\
+                 {"type": "boolean", "name": "field2", "required": true, "default": false},\n\
+                 {"type": "text", "name": "field3", "required": false, "default": "Hello"},\n\
+                 {"type": "choice", "name": "field4", "required": true, "choices": ["1", "2", "3"], "default": "2"}, \n\
+                 {"type": "date", "name": "field5", "required": true, "default": "05/27/1994"},\n\
+                 {"type": "time", "name": "field6", "required": true, "default": "05:27"},\n\
+                 {"type": "number", "name": "field7", "required": true, "default": 27} \n\
+  ]\n\
+}'
+        return render(request, 'form-generator.html', context)
+    
+    json_string = request.POST.get('json_string', '')
+    context['json_string'] = json_string
+
+    try:
+        context['generated_form'] = convertJsonToForm(json_string)
+    except ValueError:
+        context['form_errors'].append("Invalid JSON!")
+    except jsonschema.ValidationError:
+        context['form_errors'].append("JSON does not follow schema!")
+
+    return render(request, 'form-generator.html', context)

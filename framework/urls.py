@@ -29,7 +29,8 @@ urlpatterns = [
     url(r'^register/$', views.register, name='register'),
     url(r'^confirm-registration/(?P<username>[a-zA-Z0-9_@\+\-]+)/(?P<token>[a-z0-9\-]+)$',
         views.confirm_registration, name='confirm'),
-    url(r'^', views.home, name='main'),
+    url(r'^$', views.home, name='main'),
+    url(r'^json-test/$', views.testAppForm, name='json_test'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

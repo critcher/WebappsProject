@@ -29,3 +29,6 @@ class RegisterForm(forms.Form):
         if User.objects.filter(username__exact=self.cleaned_data.get('username')):
             raise forms.ValidationError("username taken!")
         return cleanDict
+
+class AppSettingsForm(forms.Form):
+    placeholder = forms.CharField()

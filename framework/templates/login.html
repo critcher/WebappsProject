@@ -13,29 +13,7 @@
 
 	<div class="row">
 		<div class="col-xs-6 col-xs-offset-3 text-center">
-			<form class="form-vertical" method="post" action="{% url 'django.contrib.auth.views.login' %}">
-				{% for error in form.non_field_errors %}
-					<div class="error"> {{ error }} </div>
-				{% endfor %}
-
-				{% for field in form %}
-					<div class="form-group">
-
-						{{field.label_tag}}
-						{{field}}
-						{{field.errors}}
-					</div>
-				{% endfor %}
-
-			<div class="row">
-				<div class="col-xs-12">
-					<input type="submit" class="btn btn-default" value="Login" />
-					<a class="btn btn-default" href="{% url 'register' %}">Register</a>
-				</div>
-			</div>
-			<input type="hidden" name="next" value="{{ next }}" />
-			{% csrf_token %}
-			</form>
+			{% include 'form.html' with submit_string="Login" form_action='login' %}
 		</div>
 	</div>
 

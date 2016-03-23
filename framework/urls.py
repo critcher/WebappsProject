@@ -21,8 +21,7 @@ from project import settings
 
 
 urlpatterns = [
-    url(r'^login/$', 'django.contrib.auth.views.login',
-        {'template_name': 'login.html'}, name='login'),
+    url(r'^login/$', views.signIn, name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login',
         name='logout'),
     url(r'^profile/(?P<userArg>\w{0,50})/$', views.profile, name='profile'),

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
-from forms import RegisterForm
+from forms import RegisterForm, SignInForm
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from mimetypes import guess_type
 from django.core import serializers
@@ -35,6 +35,19 @@ def about(request):
     context['user'] = request.user
     return render(request, 'about.html', context)
 
+def signIn(request):
+    context = {}
+    if (request.method == "GET"):
+        context['form'] = SignInForm()
+        return render(request, 'login.html', context)
+
+    form = SignInForm(request.POST)
+    if (not form.is_valid()):
+        context['form'] = form
+        return render(request, 'login.html', context)       
+
+    login(request, form.user)
+    return redirect(reverse('main'))
 
 @login_required
 def profile(request, userArg):
@@ -91,10 +104,7 @@ def register(request):
                                               email=form.cleaned_data['email'])
 
     registeredUser.backend = 'django.contrib.auth.backends.ModelBackend'
-    if True:
-        registeredUser.is_active = True
-    else:
-        registeredUser.is_active = False
+    registeredUser.is_active = False
 
     registeredUser.save()
     newUserProfile = CalendarUser.objects.create(user=registeredUser)

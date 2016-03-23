@@ -1,5 +1,5 @@
 from django import forms
-
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 
@@ -30,6 +30,30 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("username taken!")
         return cleanDict
 
+class SignInForm(forms.Form):
+    widgetForCSS = forms.TextInput(attrs={'class': 'form-control'})
+    passwordWidget = forms.PasswordInput(attrs={'class': 'form-control'})
+    username = forms.CharField(max_length=20, widget=widgetForCSS)
+    password = forms.CharField(max_length=20, widget=passwordWidget)
+
+    user = None
+
+    def is_valid(self):
+        valid = super(SignInForm, self).is_valid()
+ 
+        if (not valid):
+            return valid
+        
+        self.user = authenticate(username=self.cleaned_data['username'], password=self.cleaned_data['password'])
+        if (not self.user):
+            self.add_error(None, "Invalid username/password combination.")
+            return False
+
+        if (not self.user.is_active):
+            self.add_error(None, "Please activate your account through email first.")
+            return False
+
+        return True
 
 class AppSettingsForm(forms.Form):
     placeholder = forms.CharField()

@@ -17,8 +17,8 @@ class RegisterForm(forms.Form):
         max_length=24, label="First Name", widget=widgetForCSS)
     last_name = forms.CharField(
         max_length=24, label="Last Name", widget=widgetForCSS)
-    email = forms.CharField(max_length=40, widget=widgetForCSS,
-                            validators=[validate_email])
+    #email = forms.CharField(max_length=40, widget=widgetForCSS, validators=[validate_email])
+    email = forms.CharField(max_length=40, widget=widgetForCSS)
 
     def clean(self):
         cleanDict = super(RegisterForm, self).clean()
@@ -29,6 +29,7 @@ class RegisterForm(forms.Form):
         if User.objects.filter(username__exact=self.cleaned_data.get('username')):
             raise forms.ValidationError("username taken!")
         return cleanDict
+
 
 class AppSettingsForm(forms.Form):
     placeholder = forms.CharField()

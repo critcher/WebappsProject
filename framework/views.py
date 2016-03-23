@@ -51,9 +51,10 @@ def profile(request, userArg):
     except MultipleObjectsReturned:
         context['errors'].append("multiple objects returned")
         return render(request, 'main.html', context)
-
-    context['bio'] = profMatch.bio
-    context['age'] = profMatch.age
+    #These fields are not yet in CalendarUser
+    #TODO?
+    #context['bio'] = profMatch.bio
+    #context['age'] = profMatch.age
     context['profile'] = profMatch
     return render(request, 'profile.html', context)
 
@@ -62,6 +63,7 @@ def profile(request, userArg):
 def register(request):
     context = {}
     context['errors'] = []
+    context['messages'] = []
     if request.method == 'GET':
         context['form'] = RegisterForm()
         return render(request, 'registration.html', context)
@@ -94,12 +96,14 @@ def register(request):
     email_body = """
     Please click the link below to
     verify your email address and complete the registration of your account:
-    http://%s%s""" % (request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
+    <a href = "http://%s%s"> VERIFY!""" % (request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
     if False:
         send_mail(subject="Verify your email address",
                   message=email_body,
-                  from_email="bomocho@GMAIL.COM",
+                  from_email="placeholder@email.com",
                   recipient_list=[registeredUser.email])
+    else:
+        context['messages'].append(email_body)
 
     context['email'] = form.cleaned_data['email']
     context['errors'].append("Needs confirmation!")
@@ -119,11 +123,12 @@ def confirm_registration(request, username, token):
     user.save()
     return render(request, 'main.html', {'errors': ["confirmed!"]})
 
+
 def testAppForm(request):
     context = {}
     context['form_errors'] = []
     context['generated_form'] = ''
-    
+
     if request.method == 'GET':
         context['json_string'] = '{\n\
   "fields": [\n\
@@ -137,7 +142,7 @@ def testAppForm(request):
   ]\n\
 }'
         return render(request, 'form-generator.html', context)
-    
+
     json_string = request.POST.get('json_string', '')
     context['json_string'] = json_string
 

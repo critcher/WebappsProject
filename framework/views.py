@@ -24,9 +24,16 @@ def home(request):
     context = {}
     context['errors'] = []
     context['messages'] = []
-    # in template check for user.is_authenticated
     context['user'] = request.user
     return render(request, 'main.html', context)
+
+
+def about(request):
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    context['user'] = request.user
+    return render(request, 'about.html', context)
 
 
 @login_required

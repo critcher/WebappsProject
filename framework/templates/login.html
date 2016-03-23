@@ -36,20 +36,9 @@
 			<input type="hidden" name="next" value="{{ next }}" />
 			{% csrf_token %}
 			</form>
-
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-xs-6 col-xs-offset-3 text-center">
-			<div class="row">
-				<div class="col-xs-12">
-					<a class="btn btn-default" href="{% url 'main' %}">Home</a>
-					<a class="btn btn-default" href="{% url 'logout' %}">Logout</a>
-				</div>
-			</div>
-		</div>
-	</div>
 
 
 {%endblock%}

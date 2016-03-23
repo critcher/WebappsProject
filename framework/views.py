@@ -29,6 +29,7 @@ def home(request):
     return render(request, 'main.html', context)
 
 
+@login_required
 def profile(request, userArg):
     context = {}
     context['errors'] = []
@@ -51,8 +52,8 @@ def profile(request, userArg):
     except MultipleObjectsReturned:
         context['errors'].append("multiple objects returned")
         return render(request, 'main.html', context)
-    #These fields are not yet in CalendarUser
-    #TODO?
+    # These fields are not yet in CalendarUser
+    # TODO?
     #context['bio'] = profMatch.bio
     #context['age'] = profMatch.age
     context['profile'] = profMatch

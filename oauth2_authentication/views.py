@@ -4,9 +4,6 @@
 # using google python api library:
 # https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/index.html
 
-
-from django.shortcuts import render
-
 import os
 import httplib2
 from oauth2client import xsrfutil
@@ -18,17 +15,12 @@ from apiclient.discovery import build
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-#from django.contrib.sites.models import get_current_site
 
 from .models import CredentialsModel, FlowModel
 
 from framework.views import viewCalendar
-
-import datetime
 
 CLIENT_SECRETS = os.path.join(
     os.path.dirname(__file__), 'client_secrets.json')
@@ -45,11 +37,8 @@ def get_accounts_ids(service):
 
 @login_required
 def index(request):
-    # use the first REDIRECT_URI if you are developing your app
-    # locally, and the second in production
-    #REDIRECT_URI = 'http://localhost:8000/oauth2/oauth2callback'
-    REDIRECT_URI = "https://%s%s" % (request.get_host(),
-                                     reverse("oauth2:return"))
+    REDIRECT_URI = "http://%s%s" % (request.get_host(),
+                                    reverse("oauth2:return"))
     FLOW = flow_from_clientsecrets(
         CLIENT_SECRETS,
         scope='https://www.googleapis.com/auth/calendar.readonly',

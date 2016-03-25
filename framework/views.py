@@ -38,7 +38,12 @@ def viewCalendar(request, service):
     context['messages'] = []
     context['events'] = []
     context['user'] = request.user
-    now = datetime.datetime.utcnow().isoformat() + 'Z'
+    #now = datetime.datetime.utcnow().isoformat() + 'Z'
+    now = datetime.datetime.utcnow()
+    now = now.replace(day=1, hour=0, minute=0)
+    now = now.isoformat() + "Z"
+    print now
+
     eventsResult = service.events().list(
         calendarId='primary', timeMin=now, maxResults=100, singleEvents=True,
         orderBy='startTime').execute()

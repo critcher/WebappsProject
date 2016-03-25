@@ -1,3 +1,6 @@
+# Based on code provided by:
+# https://developers.google.com/api-client-library/python/guide/django
+
 from __future__ import unicode_literals
 
 from django.db import models

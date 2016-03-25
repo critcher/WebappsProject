@@ -1,3 +1,10 @@
+# Based on code provided by :
+# http://www.marinamele.com/use-the-google-analytics-api-with-django
+# https://developers.google.com/api-client-library/python/guide/django
+# using google python api library:
+# https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/index.html
+
+
 from django.shortcuts import render
 
 import os

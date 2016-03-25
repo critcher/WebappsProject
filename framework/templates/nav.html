@@ -15,6 +15,11 @@
 			<a class="btn btn-default" href="{% url 'main' %}">Home</a>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-xs-12 text-center">
+			<a class="btn btn-default" href="{% url 'calendar' %}">My Calendar</a>
+		</div>
+	</div>
 	{% if not user.is_authenticated %}
 	<div class="row">
 		<div class="col-xs-12 text-center">

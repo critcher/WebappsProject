@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^confirm-registration/(?P<username>[a-zA-Z0-9_@\+\-]+)/(?P<token>[a-z0-9\-]+)$',
         views.confirm_registration, name='confirm'),
     url(r'^about/$', views.about, name='about'),
+    url(r'^calendar/$', views.checkAuth, name='calendar'),
     url(r'^$', views.home, name='main'),
     url(r'^json-test/$', views.testAppForm, name='json_test'),
     url(r'^', views.home),

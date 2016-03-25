@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.core.validators import MaxValueValidator
 
+
 class CalendarUser(models.Model):
     user = models.OneToOneField(User, related_name='userPointer')
 
@@ -44,10 +45,15 @@ class App(models.Model):
     # multiple times (with different settings, maybe)
     allow_duplicates = models.BooleanField(default=True)
 
+
 class Color(models.Model):
-    red = models.PositiveIntegerField(validators=[MaxValueValidator(255)], default=0)
-    green = models.PositiveIntegerField(validators=[MaxValueValidator(255)], default=0)
-    blue = models.PositiveIntegerField(validators=[MaxValueValidator(255)], default=0)
+    red = models.PositiveIntegerField(
+        validators=[MaxValueValidator(255)], default=0)
+    green = models.PositiveIntegerField(
+        validators=[MaxValueValidator(255)], default=0)
+    blue = models.PositiveIntegerField(
+        validators=[MaxValueValidator(255)], default=0)
+
 
 class AppSettings(models.Model):
     settings_json = models.TextField()
@@ -60,7 +66,8 @@ class AppSettings(models.Model):
     # for dates before this timestamp (to update changed events,
     # for example)
     last_updated_timestamp = models.DateTimeField(blank=True)
-    color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True)
+    color = models.ForeignKey(
+        Color, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.color is None:

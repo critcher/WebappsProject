@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -17,6 +17,9 @@ from appForms import convertJsonToForm
 # s3
 from s3 import s3_upload
 
+
+import datetime
+
 # Create your views here
 
 
@@ -28,12 +31,41 @@ def home(request):
     return render(request, 'main.html', context)
 
 
+@login_required
+def viewCalendar(request, service):
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    context['events'] = []
+    context['user'] = request.user
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
+    eventsResult = service.events().list(
+        calendarId='primary', timeMin=now, maxResults=100, singleEvents=True,
+        orderBy='startTime').execute()
+    events = eventsResult.get('items', [])
+    if not events:
+        context['errors'].append("no events to show!")
+        return render(request, 'main.html', context)
+    for event in events:
+        start = event['start'].get(
+            'dateTime', event['start'].get('date'))
+        print(start, event['summary'])
+        context['events'].append(start + " " + event['summary'])
+    return render(request, 'main.html', context)
+
+
+@login_required
+def checkAuth(request):
+    return redirect("/oauth2/")
+
+
 def about(request):
     context = {}
     context['errors'] = []
     context['messages'] = []
     context['user'] = request.user
     return render(request, 'about.html', context)
+
 
 def signIn(request):
     context = {}
@@ -44,10 +76,11 @@ def signIn(request):
     form = SignInForm(request.POST)
     if (not form.is_valid()):
         context['form'] = form
-        return render(request, 'login.html', context)       
+        return render(request, 'login.html', context)
 
     login(request, form.user)
     return redirect(reverse('main'))
+
 
 @login_required
 def profile(request, userArg):
@@ -114,7 +147,7 @@ def register(request):
     email_body = """
     Please click the link below to
     verify your email address and complete the registration of your account:
-    <a href = "http://%s%s"> VERIFY!""" % (request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
+    http://%s%s VERIFY!""" % (request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
     if False:
         send_mail(subject="Verify your email address",
                   message=email_body,
@@ -122,6 +155,8 @@ def register(request):
                   recipient_list=[registeredUser.email])
     else:
         context['messages'].append(email_body)
+        context['link'] = "http://%s%s" % (
+            request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
 
     context['email'] = form.cleaned_data['email']
     context['errors'].append("Needs confirmation!")

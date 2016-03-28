@@ -69,6 +69,7 @@ class Color(models.Model):
 
 
 class AppSettings(models.Model):
+    user = models.ForeignKey(CalendarUser, on_delete=models.CASCADE)
     settings_json = models.TextField()
     # Can be used to detect that a user's AppSettings are out of
     # date and might need to be prompted again

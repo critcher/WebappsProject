@@ -86,7 +86,8 @@ def getEventsJSON(request):
     # still need to make url that takes start/end args
     # TODO pass start/end as ISO6801 format
     # TODO
-    if "start" not in request or "end" not in request:
+
+    if request.method == "GET" or "start" not in request.POST or "end" not in request.POST:
         start = datetime.datetime.utcnow()
         end = start.replace(year=start.year + 1)
         end = end.isoformat() + "Z"

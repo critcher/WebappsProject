@@ -25,6 +25,7 @@ from oauth2client import xsrfutil
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.django_orm import Storage
 from apiclient.discovery import build
+from apiclient.errors import HttpError
 from django.conf import settings
 
 from .models import CredentialsModel, FlowModel
@@ -37,11 +38,7 @@ CLIENT_SECRETS = os.path.join(
 
 
 def home(request):
-    context = {}
-    context['errors'] = []
-    context['messages'] = []
-    context['user'] = request.user
-    return render(request, 'main.html', context)
+    return viewCalendar(request)
 
 
 @login_required
@@ -49,35 +46,7 @@ def viewCalendar(request):
     context = {}
     context['errors'] = []
     context['messages'] = []
-    context['events'] = []
     context['user'] = request.user
-    user = request.user
-    storage = Storage(CredentialsModel, 'id', user, 'credential')
-    credential = storage.get()
-    if credential is None or credential.invalid is True:
-        return checkAuth(request)
-    http = httplib2.Http()
-    http = credential.authorize(http)
-    service = build('calendar', 'v3', http=http)
-
-    #now = datetime.datetime.utcnow().isoformat() + 'Z'
-    now = datetime.datetime.utcnow()
-    now = now.replace(day=1, hour=0, minute=0)
-    now = now.isoformat() + "Z"
-    print now
-
-    eventsResult = service.events().list(
-        calendarId='primary', timeMin=now, maxResults=100, singleEvents=True,
-        orderBy='startTime').execute()
-    events = eventsResult.get('items', [])
-    if not events:
-        context['errors'].append("no events to show!")
-        return render(request, 'main.html', context)
-    for event in events:
-        start = event['start'].get(
-            'dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-        context['events'].append(start + " " + event['summary'])
     return render(request, 'main.html', context)
 
 
@@ -86,8 +55,18 @@ def getEventsJSON(request):
     # still need to make url that takes start/end args
     # TODO pass start/end as ISO6801 format
     # TODO
-
-    if request.method == "GET" or "start" not in request.POST or "end" not in request.POST:
+    events = []
+    if "start" in request.GET and "end" in request.GET:
+        try:
+            start = datetime.datetime.strptime(request.GET['start'], "%Y-%m-%d")
+            end = datetime.datetime.strptime(request.GET['end'], "%Y-%m-%d")
+        except ValueError, e:
+            print e
+            return JsonResponse(events, safe=False)
+        end = end.isoformat() + "Z"
+        start = start.isoformat() + "Z"
+        print start
+    else:
         start = datetime.datetime.utcnow()
         end = start.replace(year=start.year + 1)
         end = end.isoformat() + "Z"
@@ -102,11 +81,13 @@ def getEventsJSON(request):
     http = httplib2.Http()
     http = credential.authorize(http)
     service = build('calendar', 'v3', http=http)
-    eventsResult = service.events().list(
-        calendarId='primary', timeMin=start, timeMax=end, maxResults=100, singleEvents=True,
-        orderBy='startTime').execute()
+    try:
+        eventsResult = service.events().list(
+            calendarId='primary', timeMin=start, timeMax=end, maxResults=100, singleEvents=True,
+            orderBy='startTime').execute()
+    except HttpError:
+        return JsonResponse(events, safe=False)
     gCalEvents = eventsResult.get('items', [])
-    events = []
     for event in gCalEvents:
         events.append(gCalToFullCalEventAdapter(event))
     return JsonResponse(events, safe=False)
@@ -119,10 +100,15 @@ def gCalToFullCalEventAdapter(gCalEvent):
     Overtime, I imagine this will become increasingly sophisticated
     """
     fCalEvent = {}
-    fCalEvent["start"] = gCalEvent["start"]["dateTime"]
-    fCalEvent["end"] = gCalEvent["end"]["dateTime"]
     fCalEvent["title"] = gCalEvent["summary"]
     fCalEvent["url"] = gCalEvent["htmlLink"]
+    try:
+        fCalEvent["start"] = gCalEvent["start"]["dateTime"]
+        fCalEvent["end"] = gCalEvent["end"]["dateTime"]
+    except KeyError:
+        fCalEvent['allDay'] = True
+        fCalEvent["start"] = gCalEvent["start"]["date"]
+        fCalEvent["end"] = gCalEvent["end"]["date"]
     return fCalEvent
 
 

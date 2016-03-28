@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.conf.urls import url
 from . import views
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -29,7 +29,9 @@ urlpatterns = [
     url(r'^confirm-registration/(?P<username>[a-zA-Z0-9_@\+\-]+)/(?P<token>[a-z0-9\-]+)$',
         views.confirm_registration, name='confirm'),
     url(r'^about/$', views.about, name='about'),
-    url(r'^calendar/$', views.checkAuth, name='calendar'),
+    url(r'^calendar/$', views.viewCalendar, name='calendar'),
+    url(r'checkAuth', views.checkAuth, name='checkAuth'),
+    url(r'oauth2callback', views.auth_return, name='oauth2return'),
     url(r'^$', views.home, name='main'),
     url(r'^json-test/$', views.testAppForm, name='json_test'),
     url(r'^', views.home),

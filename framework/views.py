@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -17,8 +17,20 @@ from appForms import convertJsonToForm
 # s3
 from s3 import s3_upload
 
+# google OAuthStuff
+import os
+import httplib2
+from oauth2client import xsrfutil
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.django_orm import Storage
+from apiclient.discovery import build
+from django.conf import settings
 
+from .models import CredentialsModel, FlowModel
 import datetime
+
+CLIENT_SECRETS = os.path.join(
+    os.path.dirname(__file__), 'client_secrets.json')
 
 # Create your views here
 
@@ -32,12 +44,15 @@ def home(request):
 
 
 @login_required
-def viewCalendar(request, service):
+def viewCalendar(request):
     context = {}
     context['errors'] = []
     context['messages'] = []
     context['events'] = []
     context['user'] = request.user
+    service = checkAuth(request)
+    if isinstance(service, HttpResponse):
+        return service
     #now = datetime.datetime.utcnow().isoformat() + 'Z'
     now = datetime.datetime.utcnow()
     now = now.replace(day=1, hour=0, minute=0)
@@ -60,8 +75,63 @@ def viewCalendar(request, service):
 
 
 @login_required
+def getEventsJSON(request):
+    checkAuth(request)
+    pass
+
+
+def get_accounts_ids(service):
+    accounts = service.management().accounts().list().execute()
+    ids = []
+    if accounts.get('items'):
+        for account in accounts['items']:
+            ids.append(account['id'])
+    return ids
+
+
+@login_required
 def checkAuth(request):
-    return redirect("/oauth2/")
+    """
+    checks the OAuth of the requesting user
+    if user has not allowed app access to their google account calendar,
+    this will redirect them to do so
+    then will return Google API Service object to be queried
+    """
+    REDIRECT_URI = "http://%s%s" % (request.get_host(),
+                                    reverse("oauth2return"))
+    FLOW = flow_from_clientsecrets(
+        CLIENT_SECRETS,
+        scope='https://www.googleapis.com/auth/calendar.readonly',
+        redirect_uri=REDIRECT_URI
+    )
+    user = request.user
+    storage = Storage(CredentialsModel, 'id', user, 'credential')
+    credential = storage.get()
+    if credential is None or credential.invalid is True:
+        FLOW.params['state'] = xsrfutil.generate_token(
+            settings.SECRET_KEY, user)
+        authorize_url = FLOW.step1_get_authorize_url()
+        f = FlowModel(id=user, flow=FLOW)
+        f.save()
+        return HttpResponseRedirect(authorize_url)
+    else:
+        http = httplib2.Http()
+        http = credential.authorize(http)
+        service = build('calendar', 'v3', http=http)
+        return service
+
+
+@login_required
+def auth_return(request):
+    user = request.user
+    if not xsrfutil.validate_token(
+            settings.SECRET_KEY, request.GET['state'], user):
+        return HttpResponseBadRequest()
+    FLOW = FlowModel.objects.get(id=user).flow
+    credential = FLOW.step2_exchange(request.GET)
+    storage = Storage(CredentialsModel, 'id', user, 'credential')
+    storage.put(credential)
+    return HttpResponseRedirect(reverse('checkAuth'))
 
 
 def about(request):

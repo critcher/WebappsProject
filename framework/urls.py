@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'oauth2callback', views.auth_return, name='oauth2return'),
     url(r'^$', views.home, name='main'),
     url(r'^json-test/$', views.testAppForm, name='json_test'),
+    url(r'^json-events/$',views.getEventsJSON, name='json_events'),
     url(r'^', views.home),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

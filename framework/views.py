@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
@@ -50,9 +51,15 @@ def viewCalendar(request):
     context['messages'] = []
     context['events'] = []
     context['user'] = request.user
-    service = checkAuth(request)
-    if isinstance(service, HttpResponse):
-        return service
+    user = request.user
+    storage = Storage(CredentialsModel, 'id', user, 'credential')
+    credential = storage.get()
+    if credential is None or credential.invalid is True:
+        return checkAuth(request)
+    http = httplib2.Http()
+    http = credential.authorize(http)
+    service = build('calendar', 'v3', http=http)
+
     #now = datetime.datetime.utcnow().isoformat() + 'Z'
     now = datetime.datetime.utcnow()
     now = now.replace(day=1, hour=0, minute=0)
@@ -76,27 +83,50 @@ def viewCalendar(request):
 
 @login_required
 def getEventsJSON(request):
-    checkAuth(request)
-    pass
+    # still need to make url that takes start/end args
+    # TODO pass start/end as ISO6801 format
+    # TODO
+    if "start" not in request or "end" not in request:
+        start = datetime.datetime.utcnow()
+        end = start.replace(year=start.year + 1)
+        end = end.isoformat() + "Z"
+        start = start.replace(day=1, hour=0, minute=0)
+        start = start.isoformat() + "Z"
+
+    user = request.user
+    storage = Storage(CredentialsModel, 'id', user, 'credential')
+    credential = storage.get()
+    if credential is None or credential.invalid is True:
+        return checkAuth(request)
+    http = httplib2.Http()
+    http = credential.authorize(http)
+    service = build('calendar', 'v3', http=http)
+    eventsResult = service.events().list(
+        calendarId='primary', timeMin=start, timeMax=end, maxResults=100, singleEvents=True,
+        orderBy='startTime').execute()
+    gCalEvents = eventsResult.get('items', [])
+    events = []
+    for event in gCalEvents:
+        events.append(gCalToFullCalEventAdapter(event))
+    return JsonResponse(events, safe=False)
 
 
-def get_accounts_ids(service):
-    accounts = service.management().accounts().list().execute()
-    ids = []
-    if accounts.get('items'):
-        for account in accounts['items']:
-            ids.append(account['id'])
-    return ids
+def gCalToFullCalEventAdapter(gCalEvent):
+    """
+    Returns FullCalendar Event Json Representation of 
+    some Google Calendar Event object
+    Overtime, I imagine this will become increasingly sophisticated
+    """
+    fCalEvent = {}
+    fCalEvent["start"] = gCalEvent["start"]["dateTime"]
+    fCalEvent["end"] = gCalEvent["end"]["dateTime"]
+    fCalEvent["title"] = gCalEvent["summary"]
+    fCalEvent["url"] = gCalEvent["htmlLink"]
+    return fCalEvent
 
 
 @login_required
 def checkAuth(request):
-    """
-    checks the OAuth of the requesting user
-    if user has not allowed app access to their google account calendar,
-    this will redirect them to do so
-    then will return Google API Service object to be queried
-    """
     REDIRECT_URI = "http://%s%s" % (request.get_host(),
                                     reverse("oauth2return"))
     FLOW = flow_from_clientsecrets(
@@ -115,10 +145,7 @@ def checkAuth(request):
         f.save()
         return HttpResponseRedirect(authorize_url)
     else:
-        http = httplib2.Http()
-        http = credential.authorize(http)
-        service = build('calendar', 'v3', http=http)
-        return service
+        return HttpResponseRedirect(reverse('main'))
 
 
 @login_required

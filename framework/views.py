@@ -47,14 +47,16 @@ def viewCalendar(request):
     context['errors'] = []
     context['messages'] = []
     context['user'] = request.user
+    user = request.user
+    storage = Storage(CredentialsModel, 'id', user, 'credential')
+    credential = storage.get()
+    if credential is None or credential.invalid is True:
+        return checkAuth(request)
     return render(request, 'main.html', context)
 
 
 @login_required
 def getEventsJSON(request):
-    # still need to make url that takes start/end args
-    # TODO pass start/end as ISO6801 format
-    # TODO
     events = []
     if "start" in request.GET and "end" in request.GET:
         try:

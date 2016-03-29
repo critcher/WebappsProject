@@ -1,5 +1,4 @@
-from jsonschema import validate, ValidationError
-import json
+from jsonValidation import *
 import os
 from framework.forms import AppSettingsForm
 from django import forms

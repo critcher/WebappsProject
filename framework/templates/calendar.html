@@ -31,6 +31,9 @@
                     return false;
                 }
             },
+            eventRender: function(event, element) {
+              $(element).tooltip({title: event.title});
+            },
             allDayDefault: false
         });
         

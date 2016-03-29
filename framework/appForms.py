@@ -73,9 +73,11 @@ def convertJsonToForm(jsonString):
     }
 
     form = AppSettingsForm()
+    form.required_css_class = 'required_field'
     del form.fields['placeholder']
 
     for field in jsonDict['fields']:
         form.fields[field['name']] = fieldFuncs[field['type']](field)
 
     return form
+

@@ -12,14 +12,17 @@
         $( ".datepicker" ).datepicker();
         $( ".timepicker" ).timepicker();
       });
-  </script>
+    </script>
 
-  <script>
-    function submitted(event) {
-        event.preventDefault();
-        alert("The form was submitted");
-    }
-</script>
+    <script>
+        function submitted(event) {
+            event.preventDefault();
+            alert("The form was submitted");
+        }
+    </script>
+    <style>
+    .required_field:after { content: "*"; }
+    </style>
 {% endblock %}
 
 {% block action %}{% endblock %}

@@ -5,7 +5,6 @@
 <link href='{% static "fullcalendar/fullcalendar.css" %}' rel='stylesheet' />
 <link href='{% static "fullcalendar/fullcalendar.print.css" %}' rel='stylesheet' media='print' />
 <script src='{% static "fullcalendar/lib/moment.min.js" %}'></script>
-<script src='{% static "fullcalendar/lib/jquery.min.js" %}'></script>
 <script src='{% static "fullcalendar/fullcalendar.min.js" %}'></script>
 <script>
 
@@ -22,7 +21,7 @@
             eventSources: [
                 {
                     url: {% url 'json_events' %},
-                    color: 'white',
+                    color: 'red',
                     textColor: 'black'
                 }
             ],

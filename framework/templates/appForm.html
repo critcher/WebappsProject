@@ -3,26 +3,11 @@
 {% block extras %}
     {% load staticfiles %}
     <link href="{% static 'widgets/datepicker/jquery.datepick.css' %}" rel="stylesheet">
-    <script src="{% static 'widgets/datepicker/jquery.datepick.js' %}"></script>
     <link href="{% static 'widgets/timepicker/jquery.timepicker.css' %}" rel="stylesheet">
+    <link href="{% static 'framework/css/appForm.css' %}" rel="stylesheet">
+    <script src="{% static 'widgets/datepicker/jquery.datepick.js' %}"></script>
     <script src="{% static 'widgets/timepicker/jquery.timepicker.js' %}"></script>
-
-    <script>
-      $(function() {
-        $( ".datepicker" ).datepicker();
-        $( ".timepicker" ).timepicker();
-      });
-    </script>
-
-    <script>
-        function submitted(event) {
-            event.preventDefault();
-            alert("The form was submitted");
-        }
-    </script>
-    <style>
-    .required_field:after { content: "*"; }
-    </style>
+    <script src="{% static 'framework/js/appForm.js' %}"></script>
 {% endblock %}
 
 {% block action %}{% endblock %}

@@ -65,7 +65,17 @@
             "type": "object",
             "properties": {
                 "type": { "enum": [ "date" ] },
-                "default": {"type": "string"}
+                "default": {"$ref": "#/definitions/Date"}
+            }
+        },
+
+        "Date": {
+            "type": "object",
+            "required": ["month", "day", "year"],
+            "properties": {
+                "month": {"type": "integer", "minimum": 1, "maximum":12},
+                "day": {"type": "integer", "minimum": 1, "maximum":31},
+                "year": {"type": "integer"}
             }
         },
 
@@ -73,7 +83,17 @@
             "type": "object",
             "properties": {
                 "type": { "enum": [ "time" ] },
-                "default": {"type": "string"}
+                "default": {"$ref": "#/definitions/Time"}
+            }
+        },
+
+        "Time": {
+            "type": "object",
+            "required": ["hour", "minute", "am"],
+            "properties": {
+                "hour": {"type": "integer", "minimum": 1, "maximum":12},
+                "minute": {"type": "integer", "minimum": 0, "maximum":59},
+                "am": {"type": "boolean"}
             }
         },
 

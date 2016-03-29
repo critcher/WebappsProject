@@ -7,23 +7,6 @@ import datetime
 
 FORM_SCHEMA_FILE = os.path.join(settings.PROJECT_ROOT, '../framework/static/formSchema.json')
 
-""" Throws IOError if the file is invalid, and ValueError
-    if the json is invalid.
-"""
-def getSchemaFromFile(filename):
-    with open(filename, 'r') as f:
-        schemaText = f.read()
-        schemaDict = json.loads(schemaText)
-    return schemaDict
-
-""" Throws ValueError if the json is invalid, and
-    ValidationError if the json does not fit the schema.
-"""
-def validateFromString(schema, jsonString):
-    jsonDict = json.loads(jsonString)
-    validate(jsonDict, schema)
-    return jsonDict
-
 def createBooleanField(params):
     if 'default' in params:
         field = forms.BooleanField(required=False, initial=params['default'])
@@ -47,17 +30,26 @@ def createChoiceField(params):
     return field
 
 def createDateField(params):
+    wid = forms.TextInput(attrs={'class':'datepicker'})
     if 'default' in params:
-        field = forms.CharField(required=params['required'], initial=params['default'])
+        date = params['default']
+        dateStr = datetime.date(day=date['day'], month=date['month'], year=date['year']).strftime("%m/%d/%Y")
+        field = forms.CharField(required=params['required'], initial=dateStr, widget = wid)
     else:
-        field = forms.CharField(required=params['required'])
+        field = forms.CharField(required=params['required'], widget=wid)
     return field
 
 def createTimeField(params):
+    wid = forms.TextInput(attrs={'class':'timepicker'})
     if 'default' in params:
-        field = forms.CharField(required=params['required'], initial=params['default'])
+        time = params['default']
+        hr = time['hour']
+        if not time['am']:
+            hr += 12
+        dateStr = datetime.time(hour=hr, minute=time['minute']).strftime("%I:%M%p")
+        field = forms.CharField(required=params['required'], initial=dateStr, widget = wid)
     else:
-        field = forms.CharField(required=params['required'])
+        field = forms.CharField(required=params['required'], widget=wid)
     return field
 
 def createDecimalField(params):

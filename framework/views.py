@@ -280,8 +280,8 @@ def testAppForm(request):
                  {"type": "boolean", "name": "field2", "required": true, "default": false},\n\
                  {"type": "text", "name": "field3", "required": false, "default": "Hello"},\n\
                  {"type": "choice", "name": "field4", "required": true, "choices": ["1", "2", "3"], "default": "2"}, \n\
-                 {"type": "date", "name": "field5", "required": true, "default": "05/27/1994"},\n\
-                 {"type": "time", "name": "field6", "required": true, "default": "05:27"},\n\
+                 {"type": "date", "name": "field5", "required": true, "default": {"month":5, "day":27, "year":1994}},\n\
+                 {"type": "time", "name": "field6", "required": true, "default": {"hour":5, "minute":27, "am":false}},\n\
                  {"type": "number", "name": "field7", "required": true, "default": 27} \n\
   ]\n\
 }'
@@ -289,12 +289,14 @@ def testAppForm(request):
 
     json_string = request.POST.get('json_string', '')
     context['json_string'] = json_string
-
+    import traceback
     try:
         context['generated_form'] = convertJsonToForm(json_string)
-    except ValueError:
+    except ValueError, e:
+        traceback.print_exc()
         context['form_errors'].append("Invalid JSON!")
-    except jsonschema.ValidationError:
+    except jsonschema.ValidationError, e:
+        traceback.print_exc()
         context['form_errors'].append("JSON does not follow schema!")
 
     return render(request, 'form-generator.html', context)

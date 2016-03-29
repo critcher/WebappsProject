@@ -506,11 +506,19 @@ temporary rendered events).
 /* Global Event Styles
 --------------------------------------------------------------------------------------------------*/
 
+.fc-time, .fc-title {
+	font-size: 80%;
+}
+
+.fc-event, .fc-time, .fc-title {
+	font-family: "Arial", sans-serif;
+	line-height: 1;
+}
+
 .fc-event {
 	position: relative; /* for resize handle and other inner positioning */
 	display: block; /* make the <a> tag block */
 	font-size: .85em;
-	line-height: 1.3;
 	border-radius: 3px;
 	border: 1px solid #3a87ad; /* default BORDER color */
 	background-color: #3a87ad; /* default BACKGROUND color */

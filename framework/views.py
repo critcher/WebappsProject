@@ -17,6 +17,8 @@ import jsonschema
 from appForms import convertJsonToForm, convertRequestToJson
 import urllib
 import json
+from django.views.decorators.vary import vary_on_cookie
+from django.views.decorators.cache import cache_page
 # s3
 from s3 import s3_upload
 
@@ -306,7 +308,8 @@ def testAppForm(request):
 def getFormJson(request):
     return JsonResponse(convertRequestToJson(request.POST))
 
-@login_required
+@cache_page(60 * 10)
+@vary_on_cookie
 def getAppEvents(request):
     if not all(param in request.GET for param in ['id','start', 'end']):
         raise Http404

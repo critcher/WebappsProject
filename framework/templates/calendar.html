@@ -14,6 +14,7 @@
         {% for appSetting in user.userPointer.appsettings_set.all %}
         ,{
             url: '{% url 'app_events' %}',
+            cache: true,
             data: {
                 id: {{appSetting.id}}
             },

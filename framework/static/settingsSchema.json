@@ -4,17 +4,7 @@
         "fields": {
             "type": "array",
             "items": {
-              "allOf":[
-                { "$ref": "#/definitions/Field" },
-                {"oneOf": [
-                  { "$ref": "#/definitions/BooleanField" },
-                  { "$ref": "#/definitions/TextField" },
-                  { "$ref": "#/definitions/ChoiceField" },
-                  { "$ref": "#/definitions/DateField" },
-                  { "$ref": "#/definitions/TimeField" },
-                  { "$ref": "#/definitions/DecimalField" }
-                ]}
-              ]
+                "$ref": "#/definitions/Field"
             }
         },
         "error": {"type": "string"}
@@ -26,69 +16,8 @@
             "required": ["name", "value"],
             "properties": {
                 "name": {"type": "string"},
+                "value": {"type": "string"},
                 "error": {"type": "string"}
-            }
-        },
-
-        "BooleanField": {
-            "type": "object",
-            "properties": {
-                "value": {"type": "boolean"}
-            }
-        },
-
-        "TextField": {
-            "type": "object",
-            "properties": {
-                "value": {"type": "string"}
-            }
-        },
-
-        "ChoiceField": {
-            "type": "object",
-            "properties": {
-                "value": {"type": "string"}
-            }
-        },
-
-        "DateField": {
-            "type": "object",
-            "properties": {
-                "value": {"$ref": "#/definitions/Date"}
-            }
-        },
-
-        "Date": {
-            "type": "object",
-            "required": ["month", "day", "year"],
-            "properties": {
-                "month": {"type": "integer", "minimum": 1, "maximum":12},
-                "day": {"type": "integer", "minimum": 1, "maximum":31},
-                "year": {"type": "integer"}
-            }
-        },
-
-        "TimeField": {
-            "type": "object",
-            "properties": {
-                "value": {"$ref": "#/definitions/Time"}
-            }
-        },
-
-        "Time": {
-            "type": "object",
-            "required": ["hour", "minute", "am"],
-            "properties": {
-                "hour": {"type": "integer", "minimum": 1, "maximum":12},
-                "minute": {"type": "integer", "minimum": 0, "maximum":59},
-                "am": {"type": "boolean"}
-            }
-        },
-
-        "DecimalField": {
-            "type": "object",
-            "properties": {
-                "value": {"type": "number"}
             }
         }
     }

@@ -6,6 +6,7 @@ from django.conf import settings
 import datetime
 
 FORM_SCHEMA_FILE = os.path.join(settings.PROJECT_ROOT, '../framework/static/formSchema.json')
+SETTINGS_SCHEMA_FILE = os.path.join(settings.PROJECT_ROOT, '../framework/static/settingsSchema.json')
 
 def createBooleanField(params):
     if 'default' in params:
@@ -89,4 +90,6 @@ def convertRequestToJson(params):
             jsonChunk['name'] = field
             jsonChunk['value'] = params[field]
             jsonList.append(jsonChunk)
-    return {'fields': jsonList}
+    jsonDict = {'fields': jsonList}
+    
+    return jsonDict

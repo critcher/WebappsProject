@@ -1,7 +1,23 @@
 {%load staticfiles%}
-<script type="text/javascript"> 
-   var gCalURL = {% url 'json_events' %};
+<script type="text/javascript">
+    var sources = [
+        {
+            url: '{% url 'json_events' %}',
+            color: 'white',
+            textColor: 'black'
+        }
+        {% for appSetting in user.userPointer.appsettings_set.all %}
+        ,{
+            url: '{{appSetting.app.data_url}}',
+            dataType: 'jsonp',
+            data: {
+                settings: '{{appSetting.settings_json}}',
+            },
+            color: 'rgb({{appSetting.color.red}}, {{appSetting.color.green}}, {{appSetting.color.blue}})',
+            textColor: 'white'
+        }
+        {% endfor %}
+    ]
 </script>
 <script type="text/javascript" src="{% static "framework/js/calendar.js" %}"></script>
 <div id='calendar'></div>
-

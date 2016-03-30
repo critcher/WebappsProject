@@ -7,13 +7,7 @@ $(document).ready(function() {
         },
         editable: false,
         eventLimit: true, // allow "more" link when too many events
-        eventSources: [
-            {
-                url: gCalURL,
-                color: 'white',
-                textColor: 'black'
-            }
-        ],
+        eventSources: sources,
         eventClick: function(event) {
             if (event.url) {
                 window.open(event.url);

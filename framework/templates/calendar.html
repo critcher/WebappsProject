@@ -13,11 +13,9 @@
         }
         {% for appSetting in user.userPointer.appsettings_set.all %}
         ,{
-            url: '{{appSetting.app.data_url}}',
-            dataType: 'jsonp',
-            jsonp: 'data',
+            url: '{% url 'app_events' %}',
             data: {
-                settings: '{{appSetting.settings_json}}',
+                id: {{appSetting.id}}
             },
             color: 'rgb({{appSetting.color.red}}, {{appSetting.color.green}}, {{appSetting.color.blue}})',
             textColor: 'white',

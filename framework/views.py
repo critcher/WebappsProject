@@ -12,9 +12,11 @@ from mimetypes import guess_type
 from django.core import serializers
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from models import CalendarUser
+from models import CalendarUser, AppSettings
 import jsonschema
 from appForms import convertJsonToForm, convertRequestToJson
+import urllib
+import json
 # s3
 from s3 import s3_upload
 
@@ -303,3 +305,16 @@ def testAppForm(request):
 
 def getFormJson(request):
     return JsonResponse(convertRequestToJson(request.POST))
+
+@login_required
+def getAppEvents(request):
+    if not all(param in request.GET for param in ['id','start', 'end']):
+        raise Http404
+    aps = get_object_or_404(AppSettings, id=request.GET['id'])
+    params = {'start': request.GET['start'], 'end': request.GET['end'], 'settings': aps.settings_json}
+    try:
+        response = urllib.urlopen(aps.app.data_url, urllib.urlencode(params))
+        data = json.load(response)
+    except:
+        data = {}
+    return JsonResponse(data, safe=False)

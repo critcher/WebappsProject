@@ -10148,9 +10148,12 @@ function EventManager(options) { // assumed to be a calendar
 
 
 	function isSourcesEqual(source1, source2) {
-		return source1 && source2 && getSourcePrimitive(source1) == getSourcePrimitive(source2);
+		return source1 && source2 && getSourcePrimitive(source1) == getSourcePrimitive(source2) && sameIndex(source1, source2);
 	}
 
+	function sameIndex(s1, s2) {
+		return (!s1.index && !s2.index) || (s1.index && s2.index && s1.index == s2.index);
+	}
 
 	function getSourcePrimitive(source) {
 		return (

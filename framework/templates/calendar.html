@@ -1,4 +1,9 @@
 {%load staticfiles%}
+<link href='{% static "fullcalendar/fullcalendar.css" %}' rel='stylesheet' />
+<link href='{% static "fullcalendar/fullcalendar.print.css" %}' rel='stylesheet' media='print' />
+<script src='{% static "fullcalendar/lib/moment.min.js" %}'></script>
+<script src='{% static "fullcalendar/fullcalendar.min.js" %}'></script>
+
 <script type="text/javascript">
     var sources = [
         {
@@ -14,7 +19,8 @@
                 settings: '{{appSetting.settings_json}}',
             },
             color: 'rgb({{appSetting.color.red}}, {{appSetting.color.green}}, {{appSetting.color.blue}})',
-            textColor: 'white'
+            textColor: 'white',
+            index: {{appSetting.id}}
         }
         {% endfor %}
     ]

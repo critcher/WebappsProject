@@ -1,4 +1,7 @@
 {%load staticfiles%}
+<script type="text/javascript"> 
+   var gCalURL = {% url 'json_events' %};
+</script>
 <script type="text/javascript" src="{% static "framework/js/calendar.js" %}"></script>
 <div id='calendar'></div>
 

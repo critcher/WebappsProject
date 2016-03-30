@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^$', views.home, name='main'),
     url(r'^json-test/$', views.testAppForm, name='json_test'),
     url(r'^json-events/$',views.getEventsJSON, name='json_events'),
+    url(r'^form-to-json/$',views.getFormJson, name='form_to_json'),
     url(r'^', views.home),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

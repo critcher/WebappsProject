@@ -14,7 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from models import CalendarUser
 import jsonschema
-from appForms import convertJsonToForm
+from appForms import convertJsonToForm, convertRequestToJson
 # s3
 from s3 import s3_upload
 
@@ -300,3 +300,6 @@ def testAppForm(request):
         context['form_errors'].append("JSON does not follow schema!")
 
     return render(request, 'form-generator.html', context)
+
+def getFormJson(request):
+    return JsonResponse(convertRequestToJson(request.POST))

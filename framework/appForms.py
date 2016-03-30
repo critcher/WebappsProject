@@ -81,3 +81,12 @@ def convertJsonToForm(jsonString):
 
     return form
 
+def convertRequestToJson(params):
+    jsonList = []
+    for field in params:
+        if field != 'csrfmiddlewaretoken':
+            jsonChunk = {}
+            jsonChunk['name'] = field
+            jsonChunk['value'] = params[field]
+            jsonList.append(jsonChunk)
+    return {'fields': jsonList}

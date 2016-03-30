@@ -5,5 +5,8 @@ $(function() {
 
 function submitted(event) {
     event.preventDefault();
-    alert("The form was submitted");
+    var form = $(event.target);
+    $.post(form.attr('action'), form.serialize(), function(data, status){
+        alert(JSON.stringify(data));
+    })
 }

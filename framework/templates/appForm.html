@@ -10,6 +10,6 @@
     <script src="{% static 'framework/js/appForm.js' %}"></script>
 {% endblock %}
 
-{% block action %}{% endblock %}
+{% block action %}{% url 'form_to_json' %}{% endblock %}
 
 {% block onSubmit %}submitted(event){% endblock %}

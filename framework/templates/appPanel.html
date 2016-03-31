@@ -7,18 +7,34 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-12 text-center">	
-		{%for appSetting in userApps%}
 
+		{%for appSetting in userApps%}
+		<div class="panel" color="{{appSetting.color}}">
 			<img src="{{appSetting.app.icon_url}}" width="40" height="40"> 
 			Name: {{appSetting.app.name}} <br>
 			Description: {{appSetting.app.description}} <br>
 			{{appSetting.app.version}}<br>
-	
+			<button id="button{{appSetting.id}}" class="btn btn-default" onclick=toggleAppDisplay({{appSetting.id}}) value="true">Toggle!</button>
+			<div id="test{{appSetting.id}}"></div>
+
+			<script type="text/javascript">
+				function toggleAppDisplay(id){
+					var domButton = document.getElementById("button"+id.toString());
+					var domElement = document.getElementById("test"+id.toString());
+					var toggleValue = domButton.value;
+					if(toggleValue=="true"){
+						domElement.innerHTML = "App" + id.toString() + " is ACTIVE";
+						domButton.value = "false";
+					}else{
+						domElement.innerHTML = "App" + id.toString() + " is OFF";
+						domButton.value="true";
+					}
+				}
+			</script>
+		</div>
 		{%endfor%}
 		</div>
 	</div>
-
-
 
 
 {%endif%}

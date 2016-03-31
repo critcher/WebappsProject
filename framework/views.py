@@ -12,7 +12,7 @@ from mimetypes import guess_type
 from django.core import serializers
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from models import CalendarUser
+from models import CalendarUser, AppSettings
 import jsonschema
 from appForms import convertJsonToForm, convertRequestToJson
 # s3

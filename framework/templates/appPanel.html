@@ -9,7 +9,7 @@
 		<div class="col-xs-12 text-center">	
 
 		{%for appSetting in userApps%}
-		<div class="panel" color="{{appSetting.color}}">
+		<div class="panel" style="background:{{appSetting.color}}">
 			<img src="{{appSetting.app.icon_url}}" width="40" height="40"> 
 			Name: {{appSetting.app.name}} <br>
 			Description: {{appSetting.app.description}} <br>

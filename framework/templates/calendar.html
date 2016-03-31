@@ -13,10 +13,14 @@
         }
         {% for appSetting in user.userPointer.appsettings_set.all %}
         ,{
-            url: '{% url 'app_events' %}',
+            url: '{{appSetting.app.data_url}}',
             data: {
-                id: {{appSetting.id}}
+                id: {{appSetting.id}},
+                settings: '{{appSetting.settings_json}}'
             },
+            type: "GET",
+            dataType: 'json',
+            crossDomain: true,
             color: 'rgb({{appSetting.color.red}}, {{appSetting.color.green}}, {{appSetting.color.blue}})',
             textColor: 'white',
             index: {{appSetting.id}}

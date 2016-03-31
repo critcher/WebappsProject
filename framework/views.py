@@ -49,11 +49,15 @@ def viewCalendar(request):
     context['errors'] = []
     context['messages'] = []
     context['user'] = request.user
+    context['userApps'] = []
     user = request.user
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
     if credential is None or credential.invalid is True:
         return checkAuth(request)
+    cUser = CalendarUser.objects.get(user=user)
+    qSet = AppSettings.objects.filter(user=cUser)
+    context['userApps'] = qSet.all()
     return render(request, 'main.html', context)
 
 

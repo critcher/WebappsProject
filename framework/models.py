@@ -67,6 +67,13 @@ class Color(models.Model):
     blue = models.PositiveIntegerField(
         validators=[MaxValueValidator(255)], default=0)
 
+    def __unicode__(self):
+        s = "#"
+        s += hex(self.red)[2:]
+        s += hex(self.green)[2:]
+        s += hex(self.blue)[2:]
+        return s
+
 
 class AppSettings(models.Model):
     user = models.ForeignKey(CalendarUser, on_delete=models.CASCADE)

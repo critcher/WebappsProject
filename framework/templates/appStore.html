@@ -1,0 +1,35 @@
+{%extends "base.html"%}
+
+{%block nav%}
+{%include "nav.html"%}
+{%endblock%}
+
+{%block content%}
+{%if user.is_authenticated%}
+	<div class="row">
+		<div class="col-xs-12 text-center">	
+		<h2>Welcome to the App Store!</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12 text-center">	
+
+		{%for app in availableApps%}
+		<div class="panel">
+			<img src="{{app.icon_url}}" width="40" height="40"> 
+			Name: {{app.name}} <br>
+			Description: {{app.description}} <br>
+			{{app.version}}<br>
+			<form action="{% url 'appstore' %}" method="post">
+			<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'appstore' %}">Buy me!</button>
+			{% csrf_token %}
+			</form>
+		</div>
+		{%endfor%}
+		</div>
+	</div>
+
+
+{%endif%}
+
+{%endblock%}

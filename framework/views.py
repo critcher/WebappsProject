@@ -12,7 +12,7 @@ from mimetypes import guess_type
 from django.core import serializers
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from models import CalendarUser, AppSettings
+from models import CalendarUser, AppSettings, App
 import jsonschema
 from appForms import convertJsonToForm, convertRequestToJson
 # s3
@@ -60,11 +60,40 @@ def viewCalendar(request):
 
 
 @login_required
+def appStore(request):
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    context['user'] = request.user
+    context['availableApps'] = []
+    user = request.user
+    cUser = CalendarUser.objects.get(user=user)
+    qSet = AppSettings.objects.filter(user=cUser)
+    setOfAppsUsed = set()
+    for appSetting in qSet:
+        setOfAppsUsed.add(appSetting.app)
+    qSet = App.objects.all()
+    listOfUnusedApps = []
+    for app in qSet:
+        if app.allow_duplicates or (app not in setOfAppsUsed):
+            listOfUnusedApps.append(app)
+
+    context['availableApps'] = listOfUnusedApps
+
+    if request.method == "GET":
+        pass
+    elif request.method == "POST":
+        print request.POST
+    return render(request, 'appStore.html', context)
+
+
+@login_required
 def getEventsJSON(request):
     events = []
     if "start" in request.GET and "end" in request.GET:
         try:
-            start = datetime.datetime.strptime(request.GET['start'], "%Y-%m-%d")
+            start = datetime.datetime.strptime(
+                request.GET['start'], "%Y-%m-%d")
             end = datetime.datetime.strptime(request.GET['end'], "%Y-%m-%d")
         except ValueError, e:
             print e
@@ -304,6 +333,7 @@ def testAppForm(request):
         context['form_errors'].append("JSON does not follow schema!")
 
     return render(request, 'form-generator.html', context)
+
 
 def getFormJson(request):
     return JsonResponse(convertRequestToJson(request.POST))

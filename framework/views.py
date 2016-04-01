@@ -69,6 +69,13 @@ def appStore(request):
     user = request.user
     cUser = CalendarUser.objects.get(user=user)
     qSet = AppSettings.objects.filter(user=cUser)
+    if request.method == "POST":
+        idOfAppSelected = request.POST["app"]
+        appObj = App.objects.get(id=idOfAppSelected)
+        newAppSetting = AppSettings(
+            user=cUser, app=appObj, version=appObj.version)
+        newAppSetting.save()
+
     setOfAppsUsed = set()
     for appSetting in qSet:
         setOfAppsUsed.add(appSetting.app)
@@ -77,13 +84,7 @@ def appStore(request):
     for app in qSet:
         if app.allow_duplicates or (app not in setOfAppsUsed):
             listOfUnusedApps.append(app)
-
     context['availableApps'] = listOfUnusedApps
-
-    if request.method == "GET":
-        pass
-    elif request.method == "POST":
-        print request.POST
     return render(request, 'appStore.html', context)
 
 

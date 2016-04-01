@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 from django.core.validators import MaxValueValidator
-#Google Django Support Library
+# Google Django Support Library
 from oauth2client.django_orm import FlowField, CredentialsField
+import datetime
 
 
 class FlowModel(models.Model):
@@ -15,7 +16,6 @@ class FlowModel(models.Model):
 class CredentialsModel(models.Model):
     id = models.ForeignKey(User, primary_key=True)
     credential = CredentialsField()
-
 
 
 class CalendarUser(models.Model):
@@ -91,8 +91,9 @@ class AppSettings(models.Model):
         Color, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        self.last_updated_timestamp = datetime.datetime.now()
         if self.color is None:
-            c = Color()
+            c = Color(red=222, green=222, blue=222)
             c.save()
             self.color = c
         super(AppSettings, self).save(*args, **kwargs)

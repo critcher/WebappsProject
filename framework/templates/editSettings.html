@@ -1,0 +1,74 @@
+{%extends "base.html"%}
+
+
+{%block nav%}
+{%include "nav.html"%}
+{%endblock%}
+
+
+{%block content%}
+
+<div class="row">
+    <div class="col-xs-12 text-center">
+        <h3> Edit your Apps </h3>
+    </div>
+</div>
+<div class="row">
+    <div class = "col-xs-12 text-center">
+    {%for appSetting in userApps%} 
+    <div id="App{{appSetting.id}}">
+        {%if appSetting.app.settings_url%}
+        {%else%}
+        No form to show!
+        {%endif%}
+    </div>
+    
+    {%endfor%}
+    </div>
+</div>
+<script type="text/javascript">
+{%for appSetting in userApps%}
+
+{%if appSetting.app.settings_url%}
+    var jqxhr = $.getJSON( "{{appSetting.app.settings_url}}", function(data) {
+      console.log( data );
+    });
+
+  jqxhr.done(function(data) {
+    console.log(data);
+        console.log( "second success" );
+        $.post( "{% url 'json-to-form' %}", {data, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
+            console.log(response);
+        });
+        var domElement = document.getElementById("App{{appSetting.id}}");
+        var str = "";
+        if(data.fields!=null){
+            for (var i=0; i<data.fields.length; i++){
+                var field = data.fields[i];
+                str+=field.name;
+                str+=":";
+                str+=field.value;
+                str+="<br>"
+            }
+        }
+        domElement.innerHTML = str;
+    });
+  jqxhr.fail(function() {
+        console.log( "error" );
+    });
+  jqxhr.always(function() {
+        console.log( "complete" );
+    });
+ 
+
+
+{%endif%}
+{%endfor%}
+   
+</script>
+
+{%endblock%}
+
+
+
+

@@ -31,12 +31,14 @@ urlpatterns = [
     url(r'^about/$', views.about, name='about'),
     url(r'^calendar/$', views.viewCalendar, name='calendar'),
     url(r'^appstore/$', views.appStore, name='appstore'),
+    url(r'^editSettings/$', views.viewAppForms, name='editapp'),
     url(r'checkAuth', views.checkAuth, name='checkAuth'),
     url(r'oauth2callback', views.auth_return, name='oauth2return'),
     url(r'^$', views.home, name='main'),
     url(r'^json-test/$', views.testAppForm, name='json_test'),
     url(r'^json-events/$', views.getEventsJSON, name='json_events'),
     url(r'^form-to-json/$', views.getFormJson, name='form_to_json'),
+    url(r'^json-to-form/$', views.getFormFromJson, name='json-to-form'),
     url(r'^', views.home),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

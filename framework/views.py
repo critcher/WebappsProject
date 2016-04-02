@@ -59,6 +59,28 @@ def viewCalendar(request):
     return render(request, 'main.html', context)
 
 
+def getFormFromJson(request):
+    if request.method == "GET":
+        return Http404
+    print request.POST
+    form = convertJsonToForm(convertRequestToJson(request.POST))
+    return render(request, 'form.html', {"form": form})
+
+
+@login_required
+def viewAppForms(request):
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    context['user'] = request.user
+    context['userApps'] = []
+    user = request.user
+    cUser = CalendarUser.objects.get(user=user)
+    qSet = AppSettings.objects.filter(user=cUser)
+    context['userApps'] = qSet.all()
+    return render(request, 'editSettings.html', context)
+
+
 @login_required
 def appStore(request):
     context = {}

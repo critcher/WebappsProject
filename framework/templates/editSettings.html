@@ -37,7 +37,7 @@
   jqxhr.done(function(data) {
     console.log(data);
         console.log( "second success" );
-        $.post( "{% url 'json-to-form' %}", {data, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
+        $.post( "{% url 'json-to-form' %}", {"data":JSON.stringify(data), 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
             console.log(response);
         });
         var domElement = document.getElementById("App{{appSetting.id}}");

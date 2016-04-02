@@ -62,8 +62,8 @@ def viewCalendar(request):
 def getFormFromJson(request):
     if request.method == "GET":
         return Http404
-    print request.POST
-    form = convertJsonToForm(convertRequestToJson(request.POST))
+    print request.POST['data']
+    form = convertJsonToForm(request.POST['data'])
     return render(request, 'form.html', {"form": form})
 
 

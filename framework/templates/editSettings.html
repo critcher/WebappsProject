@@ -37,21 +37,11 @@
   jqxhr.done(function(data) {
     console.log(data);
         console.log( "second success" );
-        $.post( "{% url 'json-to-form' %}", {"data":JSON.stringify(data), 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
-            console.log(response);
+        $.post( "{% url 'json-to-form' %}", {"data":JSON.stringify(data), 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(data){
+            var domElement = document.getElementById("App{{appSetting.id}}");
+            domElement.innerHTML = data;
         });
-        var domElement = document.getElementById("App{{appSetting.id}}");
-        var str = "";
-        if(data.fields!=null){
-            for (var i=0; i<data.fields.length; i++){
-                var field = data.fields[i];
-                str+=field.name;
-                str+=":";
-                str+=field.value;
-                str+="<br>"
-            }
-        }
-        domElement.innerHTML = str;
+        
     });
   jqxhr.fail(function() {
         console.log( "error" );

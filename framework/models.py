@@ -93,7 +93,7 @@ class AppSettings(models.Model):
     def save(self, *args, **kwargs):
         self.last_updated_timestamp = datetime.datetime.now()
         if self.color is None:
-            c = Color(red=222, green=222, blue=222)
+            c = Color(red=111, green=111, blue=111)
             c.save()
             self.color = c
         super(AppSettings, self).save(*args, **kwargs)

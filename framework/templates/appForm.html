@@ -21,7 +21,7 @@
 function deleteButtonAction(event, id) {
 	event.preventDefault();
 	$.post("{% url 'removeapp' %}", {"appSettingID": id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
-		$.load(response);
+		$.load("{% url 'removeapp' %}");
 		//document.location.reload(true);
 	});
 }

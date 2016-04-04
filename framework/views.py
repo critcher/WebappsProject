@@ -58,6 +58,21 @@ def viewCalendar(request):
     context['userApps'] = qSet.all()
     return render(request, 'main.html', context)
 
+
+@login_required
+def removeApp(request):
+    print request.POST
+    if request.method == 'GET' or not request.POST['appSettingID']:
+        print "hey!"
+        return redirect(reverse('editapp'))
+    settingID = request.POST['appSettingID']
+    user = request.user
+    cUser = CalendarUser.objects.get(user=user)
+    appSettingToDelete = AppSettings.objects.get(id=settingID, user=cUser)
+    appSettingToDelete.delete()
+    return redirect(reverse('main'))
+
+
 @login_required
 def getFormFromJson(request):
     context = {}
@@ -65,14 +80,17 @@ def getFormFromJson(request):
     if request.method == "GET":
         return Http404
     settingsId = request.POST.get('id', 0)
+    context['settings_id'] = settingsId
     context['appSetting'] = get_object_or_404(AppSettings, id=settingsId)
     context['form_action'] = ""
     try:
-        form = convertJsonToForm(request.POST['data'], context['appSetting'].settings_json)
+        form = convertJsonToForm(
+            request.POST['data'], context['appSetting'].settings_json)
     except Exception, e:
         print e
         return HttpResponse('')
     context['submit_string'] = "Update"
+    context['delete_string'] = "Delete this app!"
     context['form'] = form
     return render(request, 'appForm.html', context)
 

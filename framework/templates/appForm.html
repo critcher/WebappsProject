@@ -23,14 +23,21 @@
             $( ".datepicker" ).datepicker();
             $( ".timepicker" ).timepicker();
             $( "#panel{{appSetting.id}} .colorpicker" ).spectrum({
-            color: "{{appSetting.color}}",
-            change: function(color) {
-                
-            }});
+                color: "{{appSetting.color}}",
+                change: function(color) {}
+            });
         });
-    </script>
+
+    function deleteButtonAction(event, id) {
+    	event.preventDefault();
+    	$.post("{% url 'removeapp' %}", {"appSettingID": id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
+    		$.load("{% url 'removeapp' %}");
+    	});
+    }
+</script>
 {% endblock %}
 
 {% block action %}{% url 'form_to_json' %}{% endblock %}
 
 {% block onSubmit %}submitted(event){% endblock %}
+{% block onDelete %}deleteButtonAction(event, {{settings_id}}){% endblock %}

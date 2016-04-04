@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^calendar/$', views.viewCalendar, name='calendar'),
     url(r'^appstore/$', views.appStore, name='appstore'),
     url(r'^editsettings/$', views.viewAppForms, name='editapp'),
+    url(r'^removeapp/$', views.removeApp, name='removeapp'),
     url(r'checkAuth', views.checkAuth, name='checkAuth'),
     url(r'oauth2callback', views.auth_return, name='oauth2return'),
     url(r'^$', views.home, name='main'),

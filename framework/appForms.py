@@ -10,7 +10,7 @@ FORM_SCHEMA_FILE = os.path.join(
 SETTINGS_SCHEMA_FILE = os.path.join(
     settings.PROJECT_ROOT, '../framework/static/settingsSchema.json')
 FORM_SCHEMA = getSchemaFromFile(FORM_SCHEMA_FILE)
-
+SETTINGS_SCHEMA = getSchemaFromFile(SETTINGS_SCHEMA_FILE)
 
 def createBooleanField(params):
     if 'default' in params:
@@ -77,8 +77,7 @@ def createDecimalField(params):
     return field
 
 
-def convertJsonToForm(jsonString):
-
+def convertJsonToForm(jsonString, curSettings=None):
     jsonDict = validateFromString(FORM_SCHEMA, jsonString)
 
     fieldFuncs = {
@@ -96,6 +95,15 @@ def convertJsonToForm(jsonString):
 
     for field in jsonDict['fields']:
         form.fields[field['name']] = fieldFuncs[field['type']](field)
+
+    if curSettings:
+        curSettingsDict = validateFromString(SETTINGS_SCHEMA, curSettings)
+        for field in curSettingsDict['fields']:
+            name = field['name']
+            print name
+            print form.fields.keys()
+            if name in form.fields:
+                form.fields[name].initial = field['value']
 
     return form
 

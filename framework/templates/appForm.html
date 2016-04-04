@@ -7,6 +7,15 @@
     <link href="{% static 'framework/css/appForm.css' %}" rel="stylesheet">
     <script src="{% static 'widgets/datepicker/jquery.datepick.js' %}"></script>
     <script src="{% static 'widgets/timepicker/jquery.timepicker.js' %}"></script>
+{% endblock %}
+
+{% block before %}
+        <div class="panel" style="background-color:{{appSetting.color}};">
+            <h2>{{appSetting.app.name}}</h2>
+{% endblock %}
+
+{% block after %}
+    </div>
     <script src="{% static 'framework/js/appForm.js' %}"></script>
 {% endblock %}
 

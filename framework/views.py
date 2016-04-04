@@ -58,18 +58,21 @@ def viewCalendar(request):
     context['userApps'] = qSet.all()
     return render(request, 'main.html', context)
 
-
+@login_required
 def getFormFromJson(request):
     context = {}
+    print request.user
     if request.method == "GET":
         return Http404
-    print request.POST['data']
+    settingsId = request.POST.get('id', 0)
+    context['appSetting'] = get_object_or_404(AppSettings, id=settingsId)
     context['form_action'] = ""
     try:
-        form = convertJsonToForm(request.POST['data'])
-    except e:
-        return render()
-    context['submit_string'] = "submit!"
+        form = convertJsonToForm(request.POST['data'], context['appSetting'].settings_json)
+    except Exception, e:
+        print e
+        return HttpResponse('')
+    context['submit_string'] = "Update"
     context['form'] = form
     return render(request, 'appForm.html', context)
 

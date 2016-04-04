@@ -1,5 +1,7 @@
 {% block extras %}{% endblock %}
 
+
+{% block before %}{% endblock %}
 <form class="form-vertical" method="post" action="{% block action %}{% url form_action %}{% endblock %}" onSubmit="{% block onSubmit %}{% endblock %}">
     {% for error in form.non_field_errors %}
         <div class="error"> {{ error }} </div>
@@ -15,3 +17,5 @@
     <input type="submit" class="btn btn-default" value="{{submit_string}}" />
     {% csrf_token %}
 </form>
+
+{% block after %}{% endblock %}

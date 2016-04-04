@@ -21,38 +21,19 @@
     </div>
 </div>
 <script type="text/javascript">
-{%for appSetting in userApps%}
-
-{%if appSetting.app.settings_url%}
-    var jqxhr = $.getJSON( "{{appSetting.app.settings_url}}", function(data) {
-      console.log( data );
-    });
-
-  jqxhr.done(function(data) {
-    console.log(data);
-        console.log( "second success" );
-        $.post( "{% url 'json-to-form' %}", {"id": {{appSetting.id}}, "data":JSON.stringify(data), 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(data){
-            var domElement = $("#App{{appSetting.id}}");
-            domElement.html(data);
-            domElement.find("script").each(function(i) {
-                    eval($(this).text());
-            });
-        });
-        
-    });
-  jqxhr.fail(function() {
-        console.log( "error" );
-    });
-  jqxhr.always(function() {
-        console.log( "complete" );
-    });
- 
-
-
-{%endif%}
-{%endfor%}
-   
+    var formUrls = [
+    {%for appSetting in userApps%}
+    {
+    "url": "{{appSetting.app.settings_url}}",
+    "id": "{{appSetting.id}}"
+    },
+    {%endfor%}
+    ];
+    var csrf = "{{csrf_token}}";
+    var json2form = "{% url 'json-to-form' %}";
 </script>
+{% load staticfiles %}
+<script src="{% static 'framework/js/appForm.js' %}"></script>
 
 {%endblock%}
 

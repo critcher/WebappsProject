@@ -18,11 +18,11 @@
     </div>
     <script src="{% static 'framework/js/appForm.js' %}"></script>
     <script>
+    //TODO this wont work when it is in the above file "appForm.js", why?
 function deleteButtonAction(event, id) {
 	event.preventDefault();
 	$.post("{% url 'removeapp' %}", {"appSettingID": id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
-		$.load("{% url 'removeapp' %}");
-		//document.location.reload(true);
+		document.location.reload(true);
 	});
 }
 

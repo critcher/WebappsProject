@@ -8,7 +8,7 @@ import datetime
 def getEvents(request):
     events = []
     s = datetime.datetime.now()
-    e = s.replace(hour = s.hour + 1)
+    e = s.replace(hour = (s.hour + 1)%24)
     format = '%Y-%m-%dT%H:%MZ'
     events.append({'title': 'test', 'start': s.strftime(format), 'e': e.strftime(format)})
     return JsonResponse(events, safe=False)

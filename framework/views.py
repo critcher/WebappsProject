@@ -63,14 +63,13 @@ def viewCalendar(request):
 def removeApp(request):
     print request.POST
     if request.method == 'GET' or not request.POST['appSettingID']:
-        print "hey!"
         return redirect(reverse('editapp'))
     settingID = request.POST['appSettingID']
     user = request.user
     cUser = CalendarUser.objects.get(user=user)
     appSettingToDelete = AppSettings.objects.get(id=settingID, user=cUser)
     appSettingToDelete.delete()
-    return redirect(reverse('main'))
+    return redirect(reverse('editapp'))
 
 
 @login_required

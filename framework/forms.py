@@ -2,6 +2,17 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
+from models import CalendarUser
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+
+    def clean(self):
+        cleaned_data = super(UserForm, self).clean()
+        return cleaned_data
 
 
 class RegisterForm(forms.Form):
@@ -30,6 +41,7 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("username taken!")
         return cleanDict
 
+
 class SignInForm(forms.Form):
     widgetForCSS = forms.TextInput(attrs={'class': 'form-control'})
     passwordWidget = forms.PasswordInput(attrs={'class': 'form-control'})
@@ -40,20 +52,24 @@ class SignInForm(forms.Form):
 
     def is_valid(self):
         valid = super(SignInForm, self).is_valid()
- 
+
         if (not valid):
             return valid
-        
-        self.user = authenticate(username=self.cleaned_data['username'], password=self.cleaned_data['password'])
+
+        self.user = authenticate(
+            username=self.cleaned_data['username'], password=self.cleaned_data['password'])
         if (not self.user):
             self.add_error(None, "Invalid username/password combination.")
             return False
 
         if (not self.user.is_active):
-            self.add_error(None, "Please activate your account through email first.")
+            self.add_error(
+                None, "Please activate your account through email first.")
             return False
 
         return True
 
+
 class AppSettingsForm(forms.Form):
-    display_color = forms.CharField(widget=forms.TextInput(attrs={'class': 'colorpicker'}))
+    display_color = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'colorpicker'}))

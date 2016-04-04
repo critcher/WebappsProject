@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
-from forms import RegisterForm, SignInForm
+from forms import RegisterForm, SignInForm, UserForm
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from mimetypes import guess_type
 from django.core import serializers
@@ -89,7 +89,7 @@ def getFormFromJson(request):
         print e
         return HttpResponse('')
     context['submit_string'] = "Update"
-    context['delete_string'] = "Delete this app!"
+    context['delete_string'] = "Delete"
     context['form'] = form
     return render(request, 'appForm.html', context)
 
@@ -197,6 +197,20 @@ def gCalToFullCalEventAdapter(gCalEvent):
 
 
 @login_required
+def removeUserOAuth(request):
+    user = request.user
+    storage = Storage(CredentialsModel, 'id', user, 'credential')
+    credential = storage.get()
+    if credential is None:
+        return redirect(reverse('editProfile'))
+    credRecord = CredentialsModel.objects.get(id=user)
+    flowRecord = FlowModel.objects.get(id=user)
+    credRecord.delete()
+    flowRecord.delete()
+    return redirect(reverse('editProfile'))
+
+
+@login_required
 def checkAuth(request):
     REDIRECT_URI = "http://%s%s" % (request.get_host(),
                                     reverse("oauth2return"))
@@ -278,12 +292,30 @@ def profile(request, userArg):
     except MultipleObjectsReturned:
         context['errors'].append("multiple objects returned")
         return render(request, 'main.html', context)
-    # These fields are not yet in CalendarUser
-    # TODO?
-    #context['bio'] = profMatch.bio
-    #context['age'] = profMatch.age
     context['profile'] = profMatch
     return render(request, 'profile.html', context)
+
+
+@login_required
+def editProfile(request):
+    context = {}
+    context['errors'] = []
+    if request.method == 'GET':
+        context['userform'] = UserForm(instance=request.user,
+                                       prefix="userform")
+        return render(request, 'editprofile.html', context)
+    userform = UserForm(
+        data=request.POST, instance=request.user, prefix="userform")
+    context['userform'] = userform
+    if not userform.is_valid():
+        context['errors'].append("form data invalid")
+        return render(request, 'editprofile.html', context)
+    userform.save()
+    currentUser = request.user
+    currentUser.firstname = userform.cleaned_data['first_name']
+    currentUser.lastname = userform.cleaned_data['last_name']
+    currentUser.save()
+    return render(request, 'editprofile.html', context)
 
 
 @transaction.atomic

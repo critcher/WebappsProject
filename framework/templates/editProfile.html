@@ -1,0 +1,52 @@
+{%extends "base.html"%}
+
+{%block nav%}
+{%include "nav.html"%}
+{%endblock%}
+
+{%block content%}
+
+	<div class="row">
+		<div class="col-xs-12 text-center">
+			<h3> Edit Profile </h3>
+		</div>
+	</div>
+	<div class="row">
+		<div class = "col-xs-12 text-center">
+			<form enctype="multipart/form-data" class="form-vertical" method="post" action="{% url 'editprofile' %}">
+				{% for error in userform.non_field_errors %}
+					<div class="error"> {{ error }} </div>
+				{% endfor %}
+
+				{% for field in userform %}
+					<div class="form-group">
+						{{field.label_tag}}
+						{{field}}
+						{{field.errors}}
+					</div>
+				{% endfor %}
+				{% for error in profileform.non_field_errors %}
+					<div class="error"> {{ error }} </div>
+				{% endfor %}
+
+				{% for field in profileform %}
+					<div class="form-group">
+						{{field.label_tag}}
+						{{field}}
+						{{field.errors}}
+					</div>
+				{% endfor %}
+				<input type="submit" class="btn btn-default" value="Submit Edits!" />
+				{% csrf_token %}
+			</form>
+		</div>
+		<div class = "col-xs-12 text-center">
+			<a class="btn btn-default" href="{% url 'profile' user.username%}">Back to Your Profile</a>
+			<a class="btn btn-default" href="{% url 'editapp' %}">Edit Your Apps</a>
+			<a  class="btn btn-default"href="{% url 'removeUserOAuth' %}">Revoke Google User Permissions</a>
+		</div>
+	</div>
+
+
+
+{%endblock%}

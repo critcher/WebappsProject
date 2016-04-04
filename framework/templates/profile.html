@@ -12,31 +12,21 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<h3>This is the profile page of {{ author }}: </h3>
-				{{firstname}} {{lastname}} Age: {%if age%}{{age}} {%else%} unkown{%endif%}
+				{{firstname}} {{lastname}} Age: {%if age%}{{age}} {%else%} unknown{%endif%}
 			</div>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-xs-12">
-		{%if bio%}
-		Bio: {{bio}}
-		{%else%}
-		Bio: Here is where your bio could go...
-		{%endif%}
-		</div>
-	</div>
 
 	<div class="row">
-		<div class="col-xs-12">
-		{%if profile.picture_url%}
-		<img src="{{profile.picture_url}}" width=200px />
-		{%else%}
-		...Imagine an image here...
-		{%endif%}
+		<div class="row">
+			<div class="col-xs-12">
+				<a class="btn btn-default" href="{% url 'editprofile' %}">Edit Your Profile</a>
+				<a class="btn btn-default" href="{% url 'editapp' %}">Edit Your Apps</a>
+				<a  class="btn btn-default"href="{% url 'removeUserOAuth' %}">Revoke Google User Permissions</a>
+			</div>
 		</div>
 	</div>
-
 
 
 {%endblock%}

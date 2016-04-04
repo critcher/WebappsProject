@@ -133,7 +133,6 @@ def getEventsJSON(request):
             return JsonResponse(events, safe=False)
         end = end.isoformat() + "Z"
         start = start.isoformat() + "Z"
-        print start
     else:
         start = datetime.datetime.utcnow()
         end = start.replace(year=start.year + 1)
@@ -151,7 +150,7 @@ def getEventsJSON(request):
     service = build('calendar', 'v3', http=http)
     try:
         eventsResult = service.events().list(
-            calendarId='primary', timeMin=start, timeMax=end, maxResults=100, singleEvents=True,
+            calendarId='primary', timeMin=start, timeMax=end, maxResults=1000, singleEvents=True,
             orderBy='startTime').execute()
     except HttpError:
         return JsonResponse(events, safe=False)

@@ -61,7 +61,6 @@ def viewCalendar(request):
 
 @login_required
 def removeApp(request):
-    print request.POST
     if request.method == 'GET' or not request.POST['appSettingID']:
         return redirect(reverse('editapp'))
     settingID = request.POST['appSettingID']
@@ -75,7 +74,6 @@ def removeApp(request):
 @login_required
 def getFormFromJson(request):
     context = {}
-    print request.user
     if request.method == "GET":
         return Http404
     settingsId = request.POST.get('id', 0)
@@ -415,6 +413,6 @@ def testAppForm(request):
 
     return render(request, 'form-generator.html', context)
 
-
+@login_required
 def getFormJson(request):
     return JsonResponse(convertRequestToJson(request.POST))

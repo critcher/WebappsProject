@@ -108,7 +108,6 @@ def convertJsonToForm(jsonString, curSettings=None):
 
 
 def convertRequestToJson(params):
-    print params
     jsonList = []
     for field in params:
         if field != 'csrfmiddlewaretoken':

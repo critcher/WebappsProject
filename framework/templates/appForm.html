@@ -24,7 +24,9 @@
             $( ".timepicker" ).timepicker();
             $( "#panel{{appSetting.id}} .colorpicker" ).spectrum({
                 color: "{{appSetting.color}}",
-                change: function(color) {}
+                change: function(color) {
+                    $("#panel{{appSetting.id}} .colorpicker").val(color.toHexString());
+                }
             });
         });
 
@@ -39,5 +41,5 @@
 
 {% block action %}{% url 'form_to_json' %}{% endblock %}
 
-{% block onSubmit %}submitted(event){% endblock %}
+{% block onSubmit %}submitted(event, {{appSetting.id}}){% endblock %}
 {% block onDelete %}deleteButtonAction(event, {{settings_id}}){% endblock %}

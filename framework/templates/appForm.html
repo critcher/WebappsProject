@@ -17,8 +17,19 @@
 {% block after %}
     </div>
     <script src="{% static 'framework/js/appForm.js' %}"></script>
+    <script>
+function deleteButtonAction(event, id) {
+	event.preventDefault();
+	$.post("{% url 'removeapp' %}", {"appSettingID": id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
+		$.load(response);
+		//document.location.reload(true);
+	});
+}
+
+</script>
 {% endblock %}
 
 {% block action %}{% url 'form_to_json' %}{% endblock %}
 
 {% block onSubmit %}submitted(event){% endblock %}
+{% block onDelete %}deleteButtonAction(event, {{settings_id}}){% endblock %}

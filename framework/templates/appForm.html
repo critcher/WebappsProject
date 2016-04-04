@@ -4,19 +4,32 @@
     {% load staticfiles %}
     <link href="{% static 'widgets/datepicker/jquery.datepick.css' %}" rel="stylesheet">
     <link href="{% static 'widgets/timepicker/jquery.timepicker.css' %}" rel="stylesheet">
+    <link href="{% static 'widgets/colorpicker/spectrum.css' %}" rel="stylesheet">
     <link href="{% static 'framework/css/appForm.css' %}" rel="stylesheet">
     <script src="{% static 'widgets/datepicker/jquery.datepick.js' %}"></script>
     <script src="{% static 'widgets/timepicker/jquery.timepicker.js' %}"></script>
+    <script src="{% static 'widgets/colorpicker/spectrum.js' %}"></script>
 {% endblock %}
 
 {% block before %}
-        <div class="panel" style="background-color:{{appSetting.color}};">
+        <div id="panel{{appSetting.id}}" class="panel" style="background-color:{{appSetting.color}};">
             <h2>{{appSetting.app.name}}</h2>
 {% endblock %}
 
 {% block after %}
     </div>
     <script src="{% static 'framework/js/appForm.js' %}"></script>
+    <script>
+        $(function() {
+            $( ".datepicker" ).datepicker();
+            $( ".timepicker" ).timepicker();
+            $( "#panel{{appSetting.id}} .colorpicker" ).spectrum({
+            color: "{{appSetting.color}}",
+            change: function(color) {
+                
+            }});
+        });
+    </script>
 {% endblock %}
 
 {% block action %}{% url 'form_to_json' %}{% endblock %}

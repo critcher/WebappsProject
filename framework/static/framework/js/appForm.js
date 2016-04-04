@@ -1,8 +1,3 @@
-$(function() {
-    $( ".datepicker" ).datepicker();
-    $( ".timepicker" ).timepicker();
-});
-
 function submitted(event) {
     event.preventDefault();
     var form = $(event.target);

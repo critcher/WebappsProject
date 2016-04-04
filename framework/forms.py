@@ -56,4 +56,4 @@ class SignInForm(forms.Form):
         return True
 
 class AppSettingsForm(forms.Form):
-    placeholder = forms.CharField()
+    display_color = forms.CharField(widget=forms.TextInput(attrs={'class': 'colorpicker'}))

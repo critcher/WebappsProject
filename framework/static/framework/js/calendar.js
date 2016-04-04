@@ -1,4 +1,9 @@
 $(document).ready(function() {
+    var eventSources = [];
+    for(var k in sources) {
+        eventSources.push(sources[k]);
+    }
+
     $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
@@ -7,7 +12,7 @@ $(document).ready(function() {
         },
         editable: false,
         eventLimit: true, // allow "more" link when too many events
-        eventSources: sources,
+        eventSources: eventSources,
         eventClick: function(event) {
             if (event.url) {
                 window.open(event.url);

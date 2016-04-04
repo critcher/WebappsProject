@@ -1,4 +1,3 @@
-
 {%if user.is_authenticated%}
 	<div class="row">
 		<div class="col-xs-12 text-center">	
@@ -11,27 +10,20 @@
 
 		{%for appSetting in userApps%}
 		<div class="panel" style="background:{{appSetting.color}}">
-			<img src="{{appSetting.app.icon_url}}" width="40" height="40"> 
-			Name: {{appSetting.app.name}} <br>
-			Description: {{appSetting.app.description}} <br>
-			{{appSetting.app.version}}<br>
-			<button id="button{{appSetting.id}}" class="btn btn-default" onclick=toggleAppDisplay({{appSetting.id}}) value="true">Toggle!</button>
-			<div id="test{{appSetting.id}}"></div>
-
-			<script type="text/javascript">
-				function toggleAppDisplay(id){
-					var domButton = document.getElementById("button"+id.toString());
-					var domElement = document.getElementById("test"+id.toString());
-					var toggleValue = domButton.value;
-					if(toggleValue=="true"){
-						domElement.innerHTML = "App" + id.toString() + " is ACTIVE";
-						domButton.value = "false";
-					}else{
-						domElement.innerHTML = "App" + id.toString() + " is OFF";
-						domButton.value="true";
-					}
-				}
-			</script>
+			<div class="row">
+				<img src="{{appSetting.app.icon_url}}" class="col-xs-2"> 
+				<div class="col-xs-10">
+					<div class="row">
+						<div class ="col-xs-8">
+							<b> {{appSetting.app.name}} </b>{{appSetting.app.version}}
+						</div>
+						<input type="checkbox" id="btn{{appSetting.id}}"  class="col-xs-2 col-xs-offset-1" checked="checked">
+					</div>
+					<div class="row">
+						{{appSetting.app.description}}
+					</div>
+				</div>
+			</div>
 		</div>
 		{%endfor%}
 		</div>
@@ -40,3 +32,13 @@
 
 {%endif%}
 
+<script type="text/javascript">
+	$(document).ready(function() {
+		{%for appSetting in userApps%}
+			$("#btn{{appSetting.id}}").click(toggleAppDisplay({{appSetting.id}}));
+		{%endfor%}
+	});
+</script>
+
+{%load staticfiles%}
+<script type="text/javascript" src="{% static "framework/js/appPanel.js" %}"></script>

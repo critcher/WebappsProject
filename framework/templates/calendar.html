@@ -5,28 +5,29 @@
 <script src='{% static "fullcalendar/fullcalendar.min.js" %}'></script>
 
 <script type="text/javascript">
-    var sources = [
-        {
-            url: '{% url 'json_events' %}',
-            color: 'white',
-            textColor: 'black'
-        }
-        {% for appSetting in user.userPointer.appsettings_set.all %}
-        ,{
-            url: '{{appSetting.app.data_url}}',
-            data: {
-                id: {{appSetting.id}},
-                settings: '{{appSetting.settings_json}}'
-            },
-            type: "GET",
-            dataType: 'json',
-            crossDomain: true,
-            color: '{{appSetting.color}}',
-            textColor: 'white',
-            index: {{appSetting.id}}
-        }
+    var sources = {
+        'gCal' : {
+                    url: '{% url 'json_events' %}',
+                    color: 'white',
+                    textColor: 'black'
+                }
+        {% for appSetting in userApps %}
+        ,
+        '{{appSetting.id}}': {
+                                url: '{{appSetting.app.data_url}}',
+                                data: {
+                                    id: {{appSetting.id}},
+                                    settings: '{{appSetting.settings_json}}'
+                                },
+                                type: "GET",
+                                dataType: 'json',
+                                crossDomain: true,
+                                color: '{{appSetting.color}}',
+                                textColor: 'white',
+                                index: {{appSetting.id}}
+                            }
         {% endfor %}
-    ]
+    }
 </script>
 <script type="text/javascript" src="{% static "framework/js/calendar.js" %}"></script>
 <div id='calendar'></div>

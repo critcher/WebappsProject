@@ -199,13 +199,12 @@ def removeUserOAuth(request):
     user = request.user
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    if credential is None:
-        return redirect(reverse('editProfile'))
-    credRecord = CredentialsModel.objects.get(id=user)
-    flowRecord = FlowModel.objects.get(id=user)
-    credRecord.delete()
-    flowRecord.delete()
-    return redirect(reverse('editProfile'))
+    if credential is None or credential.invalid is True:
+        return redirect(reverse('editprofile'))
+    http = httplib2.Http()
+    credential.revoke(http)
+    storage.delete()
+    return redirect(reverse('editprofile'))
 
 
 @login_required

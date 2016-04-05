@@ -17,7 +17,7 @@
                                 url: '{{appSetting.app.data_url}}',
                                 data: {
                                     id: {{appSetting.id}},
-                                    settings: '{{appSetting.settings_json}}'
+                                    settings: '{{appSetting.settings_json | safe}}'
                                 },
                                 type: "GET",
                                 dataType: 'json',

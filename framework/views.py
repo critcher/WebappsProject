@@ -101,7 +101,7 @@ def viewAppForms(request):
     context['userApps'] = []
     user = request.user
     cUser = CalendarUser.objects.get(user=user)
-    qSet = AppSettings.objects.filter(user=cUser)
+    qSet = AppSettings.objects.filter(user=cUser).order_by('-id')
     context['userApps'] = qSet.all()
     return render(request, 'editSettings.html', context)
 
@@ -122,6 +122,7 @@ def appStore(request):
         newAppSetting = AppSettings(
             user=cUser, app=appObj, version=appObj.version)
         newAppSetting.save()
+        return redirect(reverse('editapp'))
 
     setOfAppsUsed = set()
     for appSetting in qSet:

@@ -7,7 +7,12 @@
 
 
 .error{
-	color: red;
+	color: black;
+	font-style: italic;
+}
+
+.success{
+	color: black;
 	font-style: italic;
 }
 

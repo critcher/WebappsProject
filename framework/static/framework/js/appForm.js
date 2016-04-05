@@ -41,14 +41,22 @@ function submitted(event, id, url) {
                         if (clr !== "") {
                             $(panelStr).css('background-color', clr);
                         }
+                        var hasError = false;
                         for (var field in errors) {
                             if (errors.hasOwnProperty(field)) {
                                 if (field === "error") {
+                                    hasError = true;
                                     $(panelStr+ " #form_errors").html(errors[field]);
                                 } else {
+                                    hasError = true;
                                     $(panelStr+ " #" + field + "_error").html(errors[field]);
                                 }
                             }
+                        }
+                        if (!hasError) {
+                            $(panelStr+ " .success").html("Success");
+                        } else {
+                            $(panelStr+ " .success").html("");
                         }
                     }
                 });

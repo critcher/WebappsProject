@@ -26,8 +26,6 @@ urlpatterns = [
         name='logout'),
     url(r'^profile/(?P<userArg>\w{0,50})/$', views.profile, name='profile'),
     url(r'^register/$', views.register, name='register'),
-    url(r'^confirm-registration/(?P<username>[a-zA-Z0-9_@\+\-]+)/(?P<token>[a-z0-9\-]+)$',
-        views.confirm_registration, name='confirm'),
     url(r'^about/$', views.about, name='about'),
     url(r'^editprofile/$', views.editProfile, name='editprofile'),
     url(r'^calendar/$', views.viewCalendar, name='calendar'),

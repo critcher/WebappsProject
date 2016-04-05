@@ -340,44 +340,13 @@ def register(request):
                                               email=form.cleaned_data['email'])
 
     registeredUser.backend = 'django.contrib.auth.backends.ModelBackend'
-    registeredUser.is_active = False
-
+    registeredUser.is_active = True
     registeredUser.save()
+
     newUserProfile = CalendarUser.objects.create(user=registeredUser)
     newUserProfile.save()
 
-    token = default_token_generator.make_token(registeredUser)
-    email_body = """
-    Please click the link below to
-    verify your email address and complete the registration of your account:
-    http://%s%s VERIFY!""" % (request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
-    if False:
-        send_mail(subject="Verify your email address",
-                  message=email_body,
-                  from_email="placeholder@email.com",
-                  recipient_list=[registeredUser.email])
-    else:
-        context['messages'].append(email_body)
-        context['link'] = "http://%s%s" % (
-            request.get_host(), reverse('confirm', args=(registeredUser.username, token)))
-
-    context['email'] = form.cleaned_data['email']
-    context['errors'].append("Needs confirmation!")
     return render(request, 'main.html', context)
-
-
-@transaction.atomic
-def confirm_registration(request, username, token):
-    user = get_object_or_404(User, username=username)
-
-    # Send 404 error if token is invalid
-    if not default_token_generator.check_token(user, token):
-        raise Http404
-
-    # Otherwise token was valid, activate the user.
-    user.is_active = True
-    user.save()
-    return render(request, 'main.html', {'errors': ["confirmed!"]})
 
 
 def testAppForm(request):
@@ -413,11 +382,13 @@ def testAppForm(request):
 
     return render(request, 'form-generator.html', context)
 
+
 @login_required
 def getFormJson(request):
     try:
         appInstance = AppSettings.objects.get(id=request.POST['id'])
-        jsonResp = convertRequestToJson(request.POST, ['id', 'display_color', 'csrfmiddlewaretoken'])
+        jsonResp = convertRequestToJson(
+            request.POST, ['id', 'display_color', 'csrfmiddlewaretoken'])
         if request.POST['display_color'] != "":
             appInstance.color.update(request.POST['display_color'])
         appInstance.save()
@@ -426,11 +397,12 @@ def getFormJson(request):
         return HttpResponseBadRequest('')
     return JsonResponse(jsonResp)
 
+
 @login_required
 def saveSettings(request):
     try:
         data = json.loads(request.POST['settings'])
-        errorDict= {}
+        errorDict = {}
         for field in data:
             if field == 'error' and data[field] != "":
                 return JsonResponse({"error": data[field]})
@@ -444,4 +416,4 @@ def saveSettings(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest('')
-    return JsonResponse({});
+    return JsonResponse({})

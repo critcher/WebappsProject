@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^calendar/$', views.viewCalendar, name='calendar'),
     url(r'^appstore/$', views.appStore, name='appstore'),
     url(r'^editsettings/$', views.viewAppForms, name='editapp'),
+    url(r'^savesettings/$', views.saveSettings, name='save_settings'),
     url(r'^removeapp/$', views.removeApp, name='removeapp'),
     url(r'^revokeOAuth/$', views.removeUserOAuth, name='removeUserOAuth'),
     url(r'checkAuth', views.checkAuth, name='checkAuth'),

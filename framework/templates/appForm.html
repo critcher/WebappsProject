@@ -30,6 +30,9 @@
             });
         });
 
+        var saveSettingsUrl = {% url 'save_settings' %}
+        var csrf = "{{csrf_token}}"
+
     function deleteButtonAction(event, id) {
     	event.preventDefault();
     	$.post("{% url 'removeapp' %}", {"appSettingID": id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(response){
@@ -41,5 +44,8 @@
 
 {% block action %}{% url 'form_to_json' %}{% endblock %}
 
-{% block onSubmit %}submitted(event, {{appSetting.id}}){% endblock %}
-{% block onDelete %}deleteButtonAction(event, {{settings_id}}){% endblock %}
+{% block extra_buttons %}
+    <button type="button" class="btn btn-default" onclick="deleteButtonAction(event, {{settings_id}})">Delete</button>
+{% endblock %}
+
+{% block onSubmit %}submitted(event, {{appSetting.id}}, '{{appSetting.app.settings_url}}'){% endblock %}

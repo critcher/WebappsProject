@@ -67,6 +67,15 @@ class Color(models.Model):
     blue = models.PositiveIntegerField(
         validators=[MaxValueValidator(255)], default=0)
 
+    def update(self, value):
+        value = value.lstrip('#')
+        lv = len(value)
+        comps = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+        self.red = comps[0]
+        self.green = comps[1]
+        self.blue = comps[2]
+        self.save()
+
     def __unicode__(self):
         s = "#"
         s += hex(self.red)[2:]

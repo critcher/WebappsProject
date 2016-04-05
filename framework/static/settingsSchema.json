@@ -1,24 +1,13 @@
 {
-    "required": ["fields"],
     "properties": {
-        "fields": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/Field"
-            }
-        },
         "error": {"type": "string"}
     },
-
-    "definitions": {
-      "Field": {
-            "type": "object",
-            "required": ["name", "value"],
+    "additionalProperties": {
+        "type": "object",
+            "required": ["value"],
             "properties": {
-                "name": {"type": "string"},
                 "value": {"type": "string"},
                 "error": {"type": "string"}
             }
-        }
     }
 }

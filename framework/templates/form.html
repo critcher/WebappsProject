@@ -4,21 +4,24 @@
 
 {% block before %}{% endblock %}
 <form class="form-vertical" method="post" action="{% block action %}{% url form_action %}{% endblock %}" onSubmit="{% block onSubmit %}{% endblock %}">
-    {% for error in form.non_field_errors %}
-        <div class="error"> {{ error }} </div>
-    {% endfor %}
+    <div id="form_errors" class="error">
+        {% for error in form.non_field_errors %}
+             {{ error }}
+        {% endfor %}
+    </div>
 
     {% for field in form %}
         <div class="form-group">
+            <div class="error" id="{{field.html_name}}_error">
+                {{field.errors}}
+            </div>
             {{field.label_tag}}
             {{field}}
-            {{field.errors}}
         </div>
     {% endfor %}
+    {% block hidden_fields %}{%endblock%}
     <input type="submit" class="btn btn-default" value="{{submit_string}}" />
-    {%if delete_string%} <!-- this is super hacky and should be fixed-->
-    <button type="button" class="btn btn-default" onclick="{% block onDelete %}{% endblock %}">{{delete_string}}</button>
-    {%endif%}
+    {% block extra_buttons %}{%endblock%}
     {% csrf_token %}
 </form>
 

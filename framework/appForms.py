@@ -97,24 +97,19 @@ def convertJsonToForm(jsonString, curSettings=None):
 
     if curSettings:
         curSettingsDict = validateFromString(SETTINGS_SCHEMA, curSettings)
-        for field in curSettingsDict['fields']:
-            name = field['name']
-            print name
-            print form.fields.keys()
-            if name in form.fields:
-                form.fields[name].initial = field['value']
+        for field in curSettingsDict:
+            if field in form.fields:
+                form.fields[field].initial = curSettingsDict[field]['value']
 
     return form
 
 
-def convertRequestToJson(params):
-    jsonList = []
+def convertRequestToJson(params, ignoreList=[]):
+    jsonDict = {}
     for field in params:
-        if field != 'csrfmiddlewaretoken':
+        if field not in ignoreList:
             jsonChunk = {}
-            jsonChunk['name'] = field
             jsonChunk['value'] = params[field]
-            jsonList.append(jsonChunk)
-    jsonDict = {'fields': jsonList}
+            jsonDict[field] = jsonChunk
 
     return jsonDict

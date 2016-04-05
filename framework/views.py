@@ -14,6 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from models import CalendarUser, AppSettings, App
 import jsonschema
+import json
 from appForms import convertJsonToForm, convertRequestToJson
 # s3
 from s3 import s3_upload
@@ -87,7 +88,6 @@ def getFormFromJson(request):
         print e
         return HttpResponse('')
     context['submit_string'] = "Update"
-    context['delete_string'] = "Delete"
     context['form'] = form
     return render(request, 'appForm.html', context)
 
@@ -415,4 +415,33 @@ def testAppForm(request):
 
 @login_required
 def getFormJson(request):
-    return JsonResponse(convertRequestToJson(request.POST))
+    try:
+        appInstance = AppSettings.objects.get(id=request.POST['id'])
+        jsonResp = convertRequestToJson(request.POST, ['id', 'display_color', 'csrfmiddlewaretoken'])
+        if request.POST['display_color'] != "":
+            appInstance.color.update(request.POST['display_color'])
+        appInstance.save()
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest('')
+    return JsonResponse(jsonResp)
+
+@login_required
+def saveSettings(request):
+    try:
+        data = json.loads(request.POST['settings'])
+        errorDict= {}
+        for field in data:
+            if field == 'error' and data[field] != "":
+                return JsonResponse({"error": data[field]})
+            elif "error" in data[field] and data[field]['error'] != "":
+                errorDict[field] = data[field]['error']
+        if len(errorDict):
+            return JsonResponse(errorDict)
+        appInstance = AppSettings.objects.get(id=request.POST['id'])
+        appInstance.settings_json = request.POST['settings']
+        appInstance.save()
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest('')
+    return JsonResponse({});

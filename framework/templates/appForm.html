@@ -25,6 +25,7 @@
             $( ".timepicker" ).timepicker();
             $( "#panel{{appSetting.id}} .colorpicker" ).spectrum({
                 color: "{{appSetting.color}}",
+                preferredFormat: "hex",
                 change: function(color) {
                     $("#panel{{appSetting.id}} .colorpicker").val(color.toHexString());
                 }

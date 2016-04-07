@@ -132,14 +132,6 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-# email stuff
-# TODO These variables must be set in Heroku Config Vars
-#EMAIL_HOST = os.environ.get('EmailHost')
-#EMAIL_PORT = os.environ.get('EmailPort')
-#EMAIL_HOST_USER = os.environ.get('AndrewID')
-#EMAIL_HOST_PASSWORD = os.environ.get('EmailPassword')
-#EMAIL_USE_SSL = True
-
 
 # Update database configuration with $DATABASE_URL.
 

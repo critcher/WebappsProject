@@ -8,22 +8,16 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from forms import RegisterForm, SignInForm, UserForm
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from mimetypes import guess_type
-from django.core import serializers
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from models import CalendarUser, AppSettings, App
 import jsonschema
 import json
 from appForms import convertJsonToForm, convertRequestToJson
-# s3
-from s3 import s3_upload
 
 # google OAuthStuff
 import os
 import httplib2
 from oauth2client import xsrfutil
-from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 from oauth2client.django_orm import Storage
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -198,8 +192,13 @@ def gCalToFullCalEventAdapter(gCalEvent):
 @login_required
 def removeUserOAuth(request):
     user = request.user
+    calUser = CalendarUser.objects.get(user=user)
+    if not calUser.isOAuthed:
+        return redirect(reverse('editprofile'))
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
+    print credential.to_json()
+    print credential.invalid
     if credential is None or credential.invalid is True:
         return redirect(reverse('editprofile'))
     http = httplib2.Http()
@@ -228,6 +227,9 @@ def checkAuth(request):
         f.save()
         return HttpResponseRedirect(authorize_url)
     else:
+        calUser = CalendarUser.objects.get(user=user)
+        calUser.isOAuthed = True
+        calUser.save()
         return HttpResponseRedirect(reverse('main'))
 
 
@@ -237,11 +239,14 @@ def auth_return(request):
     if not xsrfutil.validate_token(
             settings.SECRET_KEY, request.GET['state'], user):
         return HttpResponseBadRequest()
-    FLOW = FlowModel.objects.get(id=user).flow
-    credential = FLOW.step2_exchange(request.GET)
-    storage = Storage(CredentialsModel, 'id', user, 'credential')
-    storage.put(credential)
-    return HttpResponseRedirect(reverse('checkAuth'))
+    try:
+        FLOW = FlowModel.objects.get(id=user).flow
+        credential = FLOW.step2_exchange(request.GET)
+        storage = Storage(CredentialsModel, 'id', user, 'credential')
+        storage.put(credential)
+        return HttpResponseRedirect(reverse('checkAuth'))
+    except FlowExchangeError:
+        return redirect(reverse('about'))
 
 
 def about(request):
@@ -343,8 +348,9 @@ def register(request):
     registeredUser.is_active = True
     registeredUser.save()
 
-    newUserProfile = CalendarUser.objects.create(user=registeredUser)
-    newUserProfile.save()
+    newCalUser = CalendarUser.objects.create(user=registeredUser)
+    newCalUser.isOAuthed = False
+    newCalUser.save()
 
     return render(request, 'main.html', context)
 

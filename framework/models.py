@@ -20,6 +20,7 @@ class CredentialsModel(models.Model):
 
 class CalendarUser(models.Model):
     user = models.OneToOneField(User, related_name='userPointer')
+    isOAuthed = models.BooleanField(default=False)
 
 
 class Calendar(models.Model):
@@ -70,7 +71,8 @@ class Color(models.Model):
     def update(self, value):
         value = value.lstrip('#')
         lv = len(value)
-        comps = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+        comps = tuple(int(value[i:i + lv // 3], 16)
+                      for i in range(0, lv, lv // 3))
         self.red = comps[0]
         self.green = comps[1]
         self.blue = comps[2]

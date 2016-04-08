@@ -20,6 +20,7 @@ $(document).ready(function() {
     }
 
     $('#calendar').fullCalendar({
+        timezone: "local",
         customButtons: {
             addEventButton: {
                 click: function() {

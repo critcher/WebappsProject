@@ -1,3 +1,18 @@
+function calEventClicked(event) {
+    if (event.url) {
+        window.open(event.url);
+        return false;
+    } else {
+        $('#modalTitle').html(event.title);
+        if (event.description) {
+            $('#modalBody').html(event.description);
+        } else {
+            $('#modalBody').html("No description.");
+        }
+        $('#fullCalModal').modal();
+    }
+}
+
 $(document).ready(function() {
     var eventSources = [];
     for(var k in sources) {
@@ -21,12 +36,7 @@ $(document).ready(function() {
         editable: false,
         eventLimit: true, // allow "more" link when too many events
         eventSources: eventSources,
-        eventClick: function(event) {
-            if (event.url) {
-                window.open(event.url);
-                return false;
-            }
-        },
+        eventClick: calEventClicked,
         eventRender: function(event, element) {
           $(element).tooltip({title: event.title});
         },

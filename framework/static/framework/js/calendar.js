@@ -5,10 +5,18 @@ $(document).ready(function() {
     }
 
     $('#calendar').fullCalendar({
+        customButtons: {
+            addEventButton: {
+                click: function() {
+                    window.open("https://calendar.google.com/calendar/render?action=template");
+                },
+                text: "+"
+            }
+        },
         header: {
             left: 'prev,next today',
             center: 'title',
-            right: 'month,agendaWeek,agendaDay'
+            right: 'month,agendaWeek,agendaDay,addEventButton'
         },
         editable: false,
         eventLimit: true, // allow "more" link when too many events

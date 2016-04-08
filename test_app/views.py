@@ -16,7 +16,7 @@ def getEvents(request):
     s = datetime.datetime.now()
     e = s.replace(hour = (s.hour + 1)%24)
     format = '%Y-%m-%dT%H:%MZ'
-    events.append({'title': title, 'start': s.strftime(format), 'e': e.strftime(format)})
+    events.append({'title': title, 'start': s.strftime(format), 'e': e.strftime(format), 'description':"This is a really cool event."})
     return JsonResponse(events, safe=False)
 
 @csrf_exempt

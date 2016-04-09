@@ -9,19 +9,18 @@ import datetime
 
 
 class FlowModel(models.Model):
-    id = models.ForeignKey(User, primary_key=True)
+    id = models.OneToOneField(User, primary_key=True)
     flow = FlowField()
 
 
 class CredentialsModel(models.Model):
-    id = models.ForeignKey(User, primary_key=True)
+    id = models.OneToOneField(User, primary_key=True)
     credential = CredentialsField()
 
 
 class CalendarUser(models.Model):
     user = models.OneToOneField(User, related_name='userPointer')
-    isOAuthed = models.IntegerField(default=0)
-    #set to 1 when true
+    isOAuthed = models.BooleanField(default=False)
 
 
 class Calendar(models.Model):

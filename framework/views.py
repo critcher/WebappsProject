@@ -17,7 +17,7 @@ from appForms import convertJsonToForm, convertRequestToJson
 import os
 import httplib2
 from oauth2client import xsrfutil
-from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError, TokenRevokeError
 from oauth2client.django_orm import Storage
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -153,12 +153,7 @@ def getEventsJSON(request):
     cUser = CalendarUser.objects.get(user=user)
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    print "is this user OAuthed?"
-    print user.username
-    print cUser.isOAuthed
-    print credential.to_json()
-    print credential.invalid
-    if credential is None or credential.invalid is True or cUser.isOAuthed < 7:
+    if credential is None or credential.invalid is True or not cUser.isOAuthed:
         return checkAuth(request)
     http = httplib2.Http()
     http = credential.authorize(http)
@@ -195,6 +190,7 @@ def gCalToFullCalEventAdapter(gCalEvent):
 
 
 @login_required
+@transaction.atomic
 def removeUserOAuth(request):
     user = request.user
     calUser = CalendarUser.objects.get(user=user)
@@ -202,12 +198,28 @@ def removeUserOAuth(request):
         return redirect(reverse('editprofile'))
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    print credential.to_json()
-    print credential.invalid
+    try:
+        flow = FlowModel.objects.get(id=user)
+        flow.delete()
+    except ObjectDoesNotExist, e:
+        print e
+    try:
+        cred = CredentialsModel.objects.get(id=user)
+        cred.delete()
+    except ObjectDoesNotExist, e:
+        print e
+    try:
+        storage = Storage(CredentialsModel, 'id', user, 'credential')
+        storage.delete()
+    except ObjectDoesNotExist, e:
+        print e
     if credential is None or credential.invalid is True:
         return redirect(reverse('editprofile'))
     http = httplib2.Http()
-    credential.revoke(http)
+    try:
+        credential.revoke(http)
+    except TokenRevokeError, e:
+        print e
     storage.delete()
     return redirect(reverse('editprofile'))
 
@@ -233,7 +245,7 @@ def checkAuth(request):
         return HttpResponseRedirect(authorize_url)
     else:
         calUser = CalendarUser.objects.get(user=user)
-        calUser.isOAuthed = 7
+        calUser.isOAuthed = True
         calUser.save()
         return HttpResponseRedirect(reverse('main'))
 
@@ -354,11 +366,26 @@ def register(request):
     registeredUser.save()
 
     newCalUser = CalendarUser.objects.create(
-        user=registeredUser, isOAuthed=0)
+        user=registeredUser, isOAuthed=False)
 
-    newCalUser.isOAuthed = 0
+    newCalUser.isOAuthed = False
     newCalUser.save()
-    print newCalUser.isOAuthed
+
+    try:
+        flow = FlowModel.objects.get(id=registeredUser)
+        flow.delete()
+    except ObjectDoesNotExist, e:
+        print e
+    try:
+        cred = CredentialsModel.objects.get(id=registeredUser)
+        cred.delete()
+    except ObjectDoesNotExist, e:
+        print e
+    try:
+        storage = Storage(CredentialsModel, 'id', registeredUser, 'credential')
+        storage.delete()
+    except ObjectDoesNotExist, e:
+        print e
     return render(request, 'main.html', context)
 
 

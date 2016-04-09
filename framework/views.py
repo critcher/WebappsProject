@@ -17,7 +17,7 @@ from appForms import convertJsonToForm, convertRequestToJson
 import os
 import httplib2
 from oauth2client import xsrfutil
-from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError, TokenRevokeError
 from oauth2client.django_orm import Storage
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -26,10 +26,9 @@ from django.conf import settings
 from .models import CredentialsModel, FlowModel
 import datetime
 
+# Needs to be Heroku Env vars TODO
 CLIENT_SECRETS = os.path.join(
     os.path.dirname(__file__), 'client_secrets.json')
-
-# Create your views here
 
 
 def home(request):
@@ -151,9 +150,10 @@ def getEventsJSON(request):
         start = start.isoformat() + "Z"
 
     user = request.user
+    cUser = CalendarUser.objects.get(user=user)
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    if credential is None or credential.invalid is True:
+    if credential is None or credential.invalid is True or not cUser.isOAuthed:
         return checkAuth(request)
     http = httplib2.Http()
     http = credential.authorize(http)
@@ -190,6 +190,7 @@ def gCalToFullCalEventAdapter(gCalEvent):
 
 
 @login_required
+@transaction.atomic
 def removeUserOAuth(request):
     user = request.user
     calUser = CalendarUser.objects.get(user=user)
@@ -200,7 +201,10 @@ def removeUserOAuth(request):
     if credential is None or credential.invalid is True:
         return redirect(reverse('editprofile'))
     http = httplib2.Http()
-    credential.revoke(http)
+    try:
+        credential.revoke(http)
+    except TokenRevokeError, e:
+        print e
     storage.delete()
     calUser.isOAuthed = False
     return redirect(reverse('editprofile'))
@@ -347,7 +351,9 @@ def register(request):
     registeredUser.is_active = True
     registeredUser.save()
 
-    newCalUser = CalendarUser.objects.create(user=registeredUser)
+    newCalUser = CalendarUser.objects.create(
+        user=registeredUser, isOAuthed=False)
+
     newCalUser.isOAuthed = False
     newCalUser.save()
 

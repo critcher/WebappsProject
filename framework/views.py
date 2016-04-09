@@ -197,13 +197,12 @@ def removeUserOAuth(request):
         return redirect(reverse('editprofile'))
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    print credential.to_json()
-    print credential.invalid
     if credential is None or credential.invalid is True:
         return redirect(reverse('editprofile'))
     http = httplib2.Http()
     credential.revoke(http)
     storage.delete()
+    calUser.isOAuthed = False
     return redirect(reverse('editprofile'))
 
 

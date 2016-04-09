@@ -26,10 +26,9 @@ from django.conf import settings
 from .models import CredentialsModel, FlowModel
 import datetime
 
+# Needs to be Heroku Env vars TODO
 CLIENT_SECRETS = os.path.join(
     os.path.dirname(__file__), 'client_secrets.json')
-
-# Create your views here
 
 
 def home(request):
@@ -151,9 +150,15 @@ def getEventsJSON(request):
         start = start.isoformat() + "Z"
 
     user = request.user
+    cUser = CalendarUser.objects.get(user=user)
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    if credential is None or credential.invalid is True:
+    print "is this user OAuthed?"
+    print user.username
+    print cUser.isOAuthed
+    print credential.to_json()
+    print credential.invalid
+    if credential is None or credential.invalid is True or not cUser.isOAuthed:
         return checkAuth(request)
     http = httplib2.Http()
     http = credential.authorize(http)
@@ -348,7 +353,8 @@ def register(request):
     registeredUser.is_active = True
     registeredUser.save()
 
-    newCalUser = CalendarUser.objects.create(user=registeredUser)
+    newCalUser = CalendarUser.objects.create(
+        user=registeredUser, isOAuthed=False)
     newCalUser.isOAuthed = False
     newCalUser.save()
 

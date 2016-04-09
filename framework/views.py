@@ -45,7 +45,7 @@ def viewCalendar(request):
     user = request.user
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    if credential is None or credential.invalid is True:
+    if credential is None or credential.invalid is True or not user.userPointer.isOAuthed:
         return checkAuth(request)
     cUser = CalendarUser.objects.get(user=user)
     qSet = AppSettings.objects.filter(user=cUser)
@@ -207,6 +207,8 @@ def removeUserOAuth(request):
         print e
     storage.delete()
     calUser.isOAuthed = False
+    calUser.save()
+    print 9
     return redirect(reverse('editprofile'))
 
 
@@ -222,17 +224,17 @@ def checkAuth(request):
     user = request.user
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    if credential is None or credential.invalid is True:
+    if credential is None or credential.invalid is True or not user.userPointer.isOAuthed:
         FLOW.params['state'] = xsrfutil.generate_token(
             settings.SECRET_KEY, user)
         authorize_url = FLOW.step1_get_authorize_url()
         f = FlowModel(id=user, flow=FLOW)
         f.save()
-        return HttpResponseRedirect(authorize_url)
-    else:
         calUser = CalendarUser.objects.get(user=user)
         calUser.isOAuthed = True
         calUser.save()
+        return HttpResponseRedirect(authorize_url)
+    else:
         return HttpResponseRedirect(reverse('main'))
 
 

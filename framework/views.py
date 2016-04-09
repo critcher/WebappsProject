@@ -158,7 +158,7 @@ def getEventsJSON(request):
     print cUser.isOAuthed
     print credential.to_json()
     print credential.invalid
-    if credential is None or credential.invalid is True or not cUser.isOAuthed:
+    if credential is None or credential.invalid is True or cUser.isOAuthed < 7:
         return checkAuth(request)
     http = httplib2.Http()
     http = credential.authorize(http)
@@ -233,7 +233,7 @@ def checkAuth(request):
         return HttpResponseRedirect(authorize_url)
     else:
         calUser = CalendarUser.objects.get(user=user)
-        calUser.isOAuthed = True
+        calUser.isOAuthed = 7
         calUser.save()
         return HttpResponseRedirect(reverse('main'))
 
@@ -354,10 +354,11 @@ def register(request):
     registeredUser.save()
 
     newCalUser = CalendarUser.objects.create(
-        user=registeredUser, isOAuthed=False)
-    newCalUser.isOAuthed = False
-    newCalUser.save()
+        user=registeredUser, isOAuthed=0)
 
+    newCalUser.isOAuthed = 0
+    newCalUser.save()
+    print newCalUser.isOAuthed
     return render(request, 'main.html', context)
 
 

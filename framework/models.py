@@ -20,7 +20,8 @@ class CredentialsModel(models.Model):
 
 class CalendarUser(models.Model):
     user = models.OneToOneField(User, related_name='userPointer')
-    isOAuthed = models.BooleanField(default=False)
+    isOAuthed = models.IntegerField(default=0)
+    #set to 1 when true
 
 
 class Calendar(models.Model):

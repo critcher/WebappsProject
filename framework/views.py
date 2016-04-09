@@ -198,21 +198,6 @@ def removeUserOAuth(request):
         return redirect(reverse('editprofile'))
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
-    try:
-        flow = FlowModel.objects.get(id=user)
-        flow.delete()
-    except ObjectDoesNotExist, e:
-        print e
-    try:
-        cred = CredentialsModel.objects.get(id=user)
-        cred.delete()
-    except ObjectDoesNotExist, e:
-        print e
-    try:
-        storage = Storage(CredentialsModel, 'id', user, 'credential')
-        storage.delete()
-    except ObjectDoesNotExist, e:
-        print e
     if credential is None or credential.invalid is True:
         return redirect(reverse('editprofile'))
     http = httplib2.Http()
@@ -371,21 +356,6 @@ def register(request):
     newCalUser.isOAuthed = False
     newCalUser.save()
 
-    try:
-        flow = FlowModel.objects.get(id=registeredUser)
-        flow.delete()
-    except ObjectDoesNotExist, e:
-        print e
-    try:
-        cred = CredentialsModel.objects.get(id=registeredUser)
-        cred.delete()
-    except ObjectDoesNotExist, e:
-        print e
-    try:
-        storage = Storage(CredentialsModel, 'id', registeredUser, 'credential')
-        storage.delete()
-    except ObjectDoesNotExist, e:
-        print e
     return render(request, 'main.html', context)
 
 

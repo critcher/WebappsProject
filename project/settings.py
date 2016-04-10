@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'test_app'
+    'weather_app'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -124,3 +124,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#For HEROKU VAR
+WEATHER_API_KEY = "9a27e7f742f66bb1aecf9e625f77f37a"

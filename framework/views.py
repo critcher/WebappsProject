@@ -208,7 +208,6 @@ def removeUserOAuth(request):
     storage.delete()
     calUser.isOAuthed = False
     calUser.save()
-    print 9
     return redirect(reverse('editprofile'))
 
 

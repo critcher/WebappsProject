@@ -5,7 +5,7 @@ import datetime
 import urllib2
 
 
-query = "https://api.seatgeek.com/2/events?datetime_utc.gte='%s'datetime_utc.lte='%s'&taxonomies.name=concert&per_page=5&sort=score.desc"
+query = "https://api.seatgeek.com/2/events?datetime_utc.gte=%s&datetime_utc.lte=%s&taxonomies.name=concert&per_page=5&sort=score.desc"
 
 output_format = '%Y-%m-%dT%H:%MZ'
 input_format = '%Y-%m-%d'
@@ -13,10 +13,10 @@ input_format = '%Y-%m-%d'
 
 @csrf_exempt
 def getEvents(request):
-
+    loc = ""
     try:
         tmp = json.loads(request.GET['settings'])
-        team = tmp['Team']['value']
+        loc = tmp["Zip Code"]["value"]
     except Exception, e:
         pass
     events = []
@@ -24,12 +24,13 @@ def getEvents(request):
     moreEvents = True
     pageNum = 1
     try:
-
         start = datetime.datetime.strptime(request.GET['start'], input_format)
         end = datetime.datetime.strptime(request.GET['end'], input_format)
-        response = urllib2.urlopen(query % (start, end))
+        q = query % (start, end)
+        if loc is not "":
+            q += "&postal_code=%s" %(loc)
+        response = urllib2.urlopen(q)
         data = json.load(response)
-        print data
         if "events" in data:
             for ev in data["events"]:
                 if "date_tbd" in ev and ev["date_tbd"]:
@@ -44,6 +45,7 @@ def getEvents(request):
 
         
     except Exception, ex:
+        print ex
         return JsonResponse(events, safe=False)
 
     return JsonResponse(events, safe=False)

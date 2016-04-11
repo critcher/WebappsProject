@@ -24,41 +24,43 @@ def getEvents(request):
     moreEvents = True
     pageNum = 1
     try:
-        start = datetime.datetime.strptime(request.GET['start'], input_format)
-        end = datetime.datetime.strptime(request.GET['end'], input_format)
+        start = request.GET['start']
+        end = request.GET['end']
         q = query % (start, end)
         if loc is not "":
-            q += "&postal_code=%s" %(loc)
+            q += "&postal_code=%s" % (loc)
         response = urllib2.urlopen(q)
         data = json.load(response)
         if "events" in data:
             for ev in data["events"]:
                 if "date_tbd" in ev and ev["date_tbd"]:
-                    #no announced start/end time
+                    # no announced start/end time
                     continue
 
                 title = ev["short_title"]
-                s = datetime.datetime.strptime(ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S") + datetime.timedelta(hours=4)
+                s = datetime.datetime.strptime(
+                    ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S") + datetime.timedelta(hours=4)
                 e = s + datetime.timedelta(hours=3)
-                description=ev["title"]
-                events.append({'title': title, 'start': s.strftime(output_format), 'end': e.strftime(output_format), "description": description})
+                description = ev["title"]
+                events.append({'title': title, 'start': s.strftime(
+                    output_format), 'end': e.strftime(output_format), "description": description})
 
-        
     except Exception, ex:
         print ex
         return JsonResponse(events, safe=False)
 
     return JsonResponse(events, safe=False)
 
+
 @csrf_exempt
 def formHandling(request):
     if request.POST:
         try:
             jsonDict = json.loads(request.body)
-            
+
             zipCode = jsonDict["Zip Code"]["value"]
             zipCode = int(zipCode)
-            if zipCode>0 and zipCode<99999:
+            if zipCode > 0 and zipCode < 99999:
                 return JsonResponse(jsonDict)
             else:
                 raise KeyError
@@ -67,5 +69,6 @@ def formHandling(request):
             return JsonResponse({"error": "Form error."})
     else:
         return JsonResponse({"fields": [
-                    {"type": "number", "name": "Zip Code", "required": True, "default": 15217} 
-      ]})
+            {"type": "number", "name": "Zip Code",
+                "required": True, "default": 15217}
+        ]})

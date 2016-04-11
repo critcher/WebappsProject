@@ -5,7 +5,7 @@ import datetime
 import urllib2
 
 
-query = "https://api.seatgeek.com/2/events?datetime_utc.gte=%s&datetime_utc.lte=%s&taxonomies.name=concert&per_page=5&sort=score.desc"
+query = "https://api.seatgeek.com/2/events?datetime_utc.gte=%s&datetime_utc.lte=%s&taxonomies.name=concert&per_page=100&sort=score.desc"
 
 output_format = '%Y-%m-%dT%H:%MZ'
 input_format = '%Y-%m-%d'
@@ -20,9 +20,6 @@ def getEvents(request):
     except Exception, e:
         pass
     events = []
-
-    moreEvents = True
-    pageNum = 1
     try:
         start = request.GET['start']
         end = request.GET['end']
@@ -36,7 +33,6 @@ def getEvents(request):
                 if "date_tbd" in ev and ev["date_tbd"]:
                     # no announced start/end time
                     continue
-
                 title = ev["short_title"]
                 s = datetime.datetime.strptime(
                     ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S") + datetime.timedelta(hours=4)

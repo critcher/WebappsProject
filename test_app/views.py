@@ -27,7 +27,7 @@ def getEvents(request):
 
         start = datetime.datetime.strptime(request.GET['start'], input_format)
         end = datetime.datetime.strptime(request.GET['end'], input_format)
-        response = urllib2.urlopen(query % (start, end]))
+        response = urllib2.urlopen(query % (start, end))
         data = json.load(response)
         print data
         if "events" in data:
@@ -56,8 +56,10 @@ def formHandling(request):
             
             zipCode = jsonDict["Zip Code"]["value"]
             zipCode = int(zipCode)
-            if zipCode>0 and zipCode<99999
-            return JsonResponse(jsonDict)
+            if zipCode>0 and zipCode<99999:
+                return JsonResponse(jsonDict)
+            else:
+                raise KeyError
         except Exception, e:
             print e
             return JsonResponse({"error": "Form error."})

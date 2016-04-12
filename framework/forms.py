@@ -1,8 +1,18 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.core.validators import validate_email
-from models import CalendarUser
+from models import CalendarUser, App
+
+
+class AppForm(forms.ModelForm):
+    class Meta:
+        model = App
+        fields = ['description', 'name', 'version', 'icon_url',
+                  'settings_url', 'data_url', 'allow_duplicates']
+
+    def clean(self):
+        cleaned_data = super(AppForm, self).clean()
+        return cleaned_data
 
 
 class UserForm(forms.ModelForm):
@@ -28,7 +38,6 @@ class RegisterForm(forms.Form):
         max_length=24, label="First Name", widget=widgetForCSS)
     last_name = forms.CharField(
         max_length=24, label="Last Name", widget=widgetForCSS)
-    #email = forms.CharField(max_length=40, widget=widgetForCSS, validators=[validate_email])
     email = forms.CharField(max_length=40, widget=widgetForCSS)
 
     def clean(self):

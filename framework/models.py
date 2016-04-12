@@ -21,6 +21,7 @@ class CredentialsModel(models.Model):
 class CalendarUser(models.Model):
     user = models.OneToOneField(User, related_name='userPointer')
     isOAuthed = models.BooleanField(default=False)
+    isDev = models.BooleanField(default=False)
 
 
 class Calendar(models.Model):

@@ -39,6 +39,7 @@ class RegisterForm(forms.Form):
     last_name = forms.CharField(
         max_length=24, label="Last Name", widget=widgetForCSS)
     email = forms.CharField(max_length=40, widget=widgetForCSS)
+    isDev = forms.BooleanField(required=False)
 
     def clean(self):
         cleanDict = super(RegisterForm, self).clean()
@@ -49,16 +50,6 @@ class RegisterForm(forms.Form):
         if User.objects.filter(username__exact=self.cleaned_data.get('username')):
             raise forms.ValidationError("username taken!")
         return cleanDict
-
-
-class RegisterFormSpecialFields(forms.ModelForm):
-    class Meta:
-        model = CalendarUser
-        fields = ["isDev"]
-
-    def clean(self):
-        cleaned_data = super(UserForm, self).clean()
-        return cleaned_data
 
 
 class SignInForm(forms.Form):

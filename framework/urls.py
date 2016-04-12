@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^profile/(?P<userArg>\w{0,50})/$', views.profile, name='profile'),
     url(r'^register/$', views.register, name='register'),
     url(r'^about/$', views.about, name='about'),
+    url(r'^registerapp/$', views.registerApp, name='addapp'),
     url(r'^editprofile/$', views.editProfile, name='editprofile'),
     url(r'^calendar/$', views.viewCalendar, name='calendar'),
     url(r'^appstore/$', views.appStore, name='appstore'),

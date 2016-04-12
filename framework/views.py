@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
-from forms import RegisterForm, SignInForm, UserForm
+from forms import RegisterForm, SignInForm, UserForm, AppForm
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from models import CalendarUser, AppSettings, App
 import jsonschema
@@ -42,6 +42,7 @@ def viewCalendar(request):
     context['messages'] = []
     context['user'] = request.user
     context['userApps'] = []
+
     user = request.user
     storage = Storage(CredentialsModel, 'id', user, 'credential')
     credential = storage.get()
@@ -50,6 +51,7 @@ def viewCalendar(request):
     cUser = CalendarUser.objects.get(user=user)
     qSet = AppSettings.objects.filter(user=cUser)
     context['userApps'] = qSet.all()
+    context['isDev'] = cUser.isDev
     return render(request, 'main.html', context)
 
 
@@ -82,6 +84,7 @@ def getFormFromJson(request):
         return HttpResponse('')
     context['submit_string'] = "Update"
     context['form'] = form
+    context['isDev'] = cUser.isDev
     return render(request, 'appForm.html', context)
 
 
@@ -96,6 +99,7 @@ def viewAppForms(request):
     cUser = CalendarUser.objects.get(user=user)
     qSet = AppSettings.objects.filter(user=cUser).order_by('-id')
     context['userApps'] = qSet.all()
+    context['isDev'] = cUser.isDev
     return render(request, 'editSettings.html', context)
 
 
@@ -126,6 +130,7 @@ def appStore(request):
         if app.allow_duplicates or (app not in setOfAppsUsed):
             listOfUnusedApps.append(app)
     context['availableApps'] = listOfUnusedApps
+    context['isDev'] = cUser.isDev
     return render(request, 'appStore.html', context)
 
 
@@ -258,6 +263,8 @@ def about(request):
     context['errors'] = []
     context['messages'] = []
     context['user'] = request.user
+    cUser = CalendarUser.objects.get(user=request.user)
+    context['isDev'] = cUser.isDev
     return render(request, 'about.html', context)
 
 
@@ -300,6 +307,8 @@ def profile(request, userArg):
         context['errors'].append("multiple objects returned")
         return render(request, 'main.html', context)
     context['profile'] = profMatch
+    cUser = CalendarUser.objects.get(user=request.user)
+    context['isDev'] = cUser.isDev
     return render(request, 'profile.html', context)
 
 
@@ -307,6 +316,8 @@ def profile(request, userArg):
 def editProfile(request):
     context = {}
     context['errors'] = []
+    cUser = CalendarUser.objects.get(user=request.user)
+    context['isDev'] = cUser.isDev
     if request.method == 'GET':
         context['userform'] = UserForm(instance=request.user,
                                        prefix="userform")
@@ -353,12 +364,41 @@ def register(request):
     registeredUser.save()
 
     newCalUser = CalendarUser.objects.create(
-        user=registeredUser, isOAuthed=False)
-
-    newCalUser.isOAuthed = False
+        user=registeredUser, isOAuthed=False, isDev=form.cleaned_data['isDev'])
     newCalUser.save()
 
     return render(request, 'main.html', context)
+
+
+@login_required
+def registerApp(request):
+    usr = request.user
+    cUser = CalendarUser.objects.get(user=usr)
+    if not cUser.isDev:
+        return redirect(reverse('editprofile'))
+
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    if request.method == 'GET':
+        context['form'] = AppForm()
+        return render(request, 'registerapp.html', context)
+    form = AppForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'registerapp.html', context)
+
+    app = App.objects.create(settings_url=form.cleaned_data['settings_url'])
+    app.data_url = form.cleaned_data['data_url']
+    app.description = form.cleaned_data['description']
+    app.name = form.cleaned_data['name']
+    app.icon_url = form.cleaned_data['icon_url']
+    app.allow_duplicates = form.cleaned_data['allow_duplicates']
+    app.save()
+
+    context['isDev'] = cUser.isDev
+    return render(request, 'registerapp.html', context)
 
 
 def testAppForm(request):

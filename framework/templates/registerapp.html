@@ -1,0 +1,23 @@
+{%extends "base.html"%}
+
+{%block nav%}
+{%include "nav.html"%}
+{%endblock%}
+
+{%block content%}
+	<div class="row">
+		<div class="col-xs-6 col-xs-offset-3 text-center">
+			<h3> Add a new App [DEV ONLY]!</h3>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6 col-xs-offset-3">
+			{% include 'form.html' with submit_string="Register" form_action='addapp' %}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-3">
+			<a class="btn btn-default" href="{% url 'main' %}">Home</a>
+		</div>
+	</div>
+{%endblock%}

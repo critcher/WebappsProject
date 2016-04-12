@@ -1,0 +1,49 @@
+{%extends "base.html"%}
+
+{%block nav%}
+{%include "nav.html"%}
+{%endblock%}
+
+{%block content%}
+{%if user.is_authenticated%}
+	<div class="row">
+		<div class="col-xs-12 text-center">	
+		<h2>Welcome to the Dev Center!</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12 text-center">	
+			<a class="btn btn-default" href="{% url 'addapp' %}">New App!</a>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-xs-12 text-center">	
+
+		{%for app in appsByDev%}
+		<div class="panel">
+			<img src="{{app.icon_url}}" width="40" height="40"> 
+			Name: {{app.name}} <br>
+			Description: {{app.description}} <br>
+			{{app.version}}<br>
+			{{app.settings_url}}
+			{{app.data_url}}
+			<form action="{% url 'editapp' app.id %}" method="post">
+			<input type="hidden" name="app" value="{{app.id}}">
+			<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'editapp' app.id %}">Edit App</button>
+			{% csrf_token %}
+			</form>
+			<form action="{% url 'deleteapp' %}" method="post">
+			<input type="hidden" name="app" value="{{app.id}}">
+			<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'deleteapp' %}">DELETE</button>
+			{% csrf_token %}
+			</form>
+		</div>
+		{%endfor%}
+		</div>
+	</div>
+
+
+{%endif%}
+
+{%endblock%}

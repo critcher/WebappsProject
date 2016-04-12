@@ -57,13 +57,13 @@ def viewCalendar(request):
 @login_required
 def removeApp(request):
     if request.method == 'GET' or not request.POST['appSettingID']:
-        return redirect(reverse('editapp'))
+        return redirect(reverse('editapp_settings'))
     settingID = request.POST['appSettingID']
     user = request.user
     cUser = CalendarUser.objects.get(user=user)
     appSettingToDelete = AppSettings.objects.get(id=settingID, user=cUser)
     appSettingToDelete.delete()
-    return redirect(reverse('editapp'))
+    return redirect(reverse('editapp_settings'))
 
 
 @login_required
@@ -116,7 +116,7 @@ def appStore(request):
         newAppSetting = AppSettings(
             user=cUser, app=appObj, version=appObj.version)
         newAppSetting.save()
-        return redirect(reverse('editapp'))
+        return redirect(reverse('editapp_settings'))
 
     setOfAppsUsed = set()
     for appSetting in qSet:
@@ -363,6 +363,55 @@ def register(request):
 
 
 @login_required
+def devCenterPage(request):
+    usr = request.user
+    cUser = CalendarUser.objects.get(user=usr)
+    if not cUser.isDev:
+        return redirect(reverse('editprofile'))
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    context['appsByDev'] = App.objects.filter(owner=cUser).all()
+
+    return render(request, 'devcenter.html', context)
+
+
+@login_required
+def deleteApp(request):
+    if request.method == 'GET' or "app" not in request.POST:
+        return redirect(reverse('devcenter'))
+    idOfApp = request.POST['app']
+    app = App.objects.get(id=idOfApp)
+    app.delete()
+    return redirect(reverse('devcenter'))
+
+
+@login_required
+def editApp(request, idOfApp):
+    if request.method == 'GET':
+        return redirect(reverse('devcenter'))
+    usr = request.user
+    cUser = CalendarUser.objects.get(user=usr)
+    if not cUser.isDev:
+        return redirect(reverse('editprofile'))
+    print request.POST
+
+    app = App.objects.get(id=idOfApp)
+    context = {}
+    context['errors'] = []
+    context['messages'] = []
+    context['app'] = app
+
+    form = AppForm(request.POST, instance=app)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'editapp.html', context)
+    form.save()
+    return redirect(reverse('devcenter'))
+
+
+@login_required
 def registerApp(request):
     usr = request.user
     cUser = CalendarUser.objects.get(user=usr)
@@ -381,7 +430,8 @@ def registerApp(request):
     if not form.is_valid():
         return render(request, 'registerapp.html', context)
 
-    app = App.objects.create(settings_url=form.cleaned_data['settings_url'])
+    app = App.objects.create(owner=cUser)
+    app.settings_url = form.cleaned_data['settings_url']
     app.data_url = form.cleaned_data['data_url']
     app.description = form.cleaned_data['description']
     app.name = form.cleaned_data['name']

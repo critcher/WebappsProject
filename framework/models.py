@@ -42,6 +42,7 @@ class Event(models.Model):
 
 
 class App(models.Model):
+    owner = models.ForeignKey(CalendarUser, on_delete=models.CASCADE)
     description = models.CharField(blank=True, max_length=1000)
     name = models.CharField(max_length=60)
     # Can be used to detect that a user's AppSettings are out of

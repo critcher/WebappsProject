@@ -7,12 +7,12 @@
 {%block content%}
 	<div class="row">
 		<div class="col-xs-6 col-xs-offset-3 text-center">
-			<h3> Add a new App [DEV ONLY]!</h3>
+			<h3> Edit this App [DEV ONLY]!</h3>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-xs-6 col-xs-offset-3">
-			{% include 'form.html' with submit_string="Register" form_action='addapp'%}
-		</div>
+			{% include 'form.html' with submit_string="Modify App" form_action='editapp' param=app.id%}
+		</div> 
 	</div>
 {%endblock%}

@@ -51,6 +51,16 @@ class RegisterForm(forms.Form):
         return cleanDict
 
 
+class RegisterFormSpecialFields(forms.ModelForm):
+    class Meta:
+        model = CalendarUser
+        fields = ["isDev"]
+
+    def clean(self):
+        cleaned_data = super(UserForm, self).clean()
+        return cleaned_data
+
+
 class SignInForm(forms.Form):
     widgetForCSS = forms.TextInput(attrs={'class': 'form-control'})
     passwordWidget = forms.PasswordInput(attrs={'class': 'form-control'})

@@ -51,7 +51,6 @@ def viewCalendar(request):
     cUser = CalendarUser.objects.get(user=user)
     qSet = AppSettings.objects.filter(user=cUser)
     context['userApps'] = qSet.all()
-    context['isDev'] = cUser.isDev
     return render(request, 'main.html', context)
 
 
@@ -84,7 +83,6 @@ def getFormFromJson(request):
         return HttpResponse('')
     context['submit_string'] = "Update"
     context['form'] = form
-    context['isDev'] = cUser.isDev
     return render(request, 'appForm.html', context)
 
 
@@ -99,7 +97,6 @@ def viewAppForms(request):
     cUser = CalendarUser.objects.get(user=user)
     qSet = AppSettings.objects.filter(user=cUser).order_by('-id')
     context['userApps'] = qSet.all()
-    context['isDev'] = cUser.isDev
     return render(request, 'editSettings.html', context)
 
 
@@ -130,7 +127,6 @@ def appStore(request):
         if app.allow_duplicates or (app not in setOfAppsUsed):
             listOfUnusedApps.append(app)
     context['availableApps'] = listOfUnusedApps
-    context['isDev'] = cUser.isDev
     return render(request, 'appStore.html', context)
 
 
@@ -263,8 +259,6 @@ def about(request):
     context['errors'] = []
     context['messages'] = []
     context['user'] = request.user
-    cUser = CalendarUser.objects.get(user=request.user)
-    context['isDev'] = cUser.isDev
     return render(request, 'about.html', context)
 
 
@@ -307,8 +301,6 @@ def profile(request, userArg):
         context['errors'].append("multiple objects returned")
         return render(request, 'main.html', context)
     context['profile'] = profMatch
-    cUser = CalendarUser.objects.get(user=request.user)
-    context['isDev'] = cUser.isDev
     return render(request, 'profile.html', context)
 
 
@@ -397,7 +389,6 @@ def registerApp(request):
     app.allow_duplicates = form.cleaned_data['allow_duplicates']
     app.save()
 
-    context['isDev'] = cUser.isDev
     return render(request, 'registerapp.html', context)
 
 

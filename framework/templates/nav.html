@@ -32,11 +32,7 @@
 			<a class="btn btn-default" href="{% url 'calendar' %}">My Calendar</a>
 		</div>
 	</div>
-		<div class="row">
-			<div class="col-xs-12 text-center">
-				<a class="btn btn-default" href="{% url 'appstore' %}">App Store</a>
-			</div>
-		</div>
+		{%if user.userPointer.isDev%}
 		<div class="row">
 			<div class="col-xs-12 text-center">
 				<a class="btn btn-default" href="{% url 'addapp' %}">Add App</a>
@@ -44,7 +40,18 @@
 		</div>
 		<div class="row">
 			<div class="col-xs-12 text-center">
-				<a class="btn btn-default" href="{% url 'editapp' %}">Edit Apps</a>
+				<!--Delete app goes here/....but do this in the dev center anyway-->
+			</div>
+		</div>
+		{%endif%}
+		<div class="row">
+			<div class="col-xs-12 text-center">
+				<a class="btn btn-default" href="{% url 'appstore' %}">App Store</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 text-center">
+				<a class="btn btn-default" href="{% url 'editapp' %}">Edit AppSettings</a>
 			</div>
 		</div>
 		<div class="row">

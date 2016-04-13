@@ -101,7 +101,10 @@ def formHandling(request):
             jsonDict = json.loads(request.body)
 
             zipCode = jsonDict["Zip Code"]["value"]
-            q = query % (zipCode)
+            try:
+                q = query % (int(zipCode))
+            except:
+                return JsonResponse({"error": "Invalid Zip Code"})
             response = urllib2.urlopen(q)
             root = ET.fromstring(response.read())
             if root.tag == 'error':

@@ -31,7 +31,7 @@ def getEvents(request):
                     # low rated movie
                     continue
                 title = movie["title"]
-                events.append({'title': title, 'allDay': True})
+                events.append({'title': title, 'start': movie['release_date'], 'allDay': True})
             except KeyError:
                 pass
 

@@ -33,9 +33,12 @@ def getEvents(request):
                 if "date_tbd" in ev and ev["date_tbd"]:
                     # no announced start/end time
                     continue
+                if 'score' in ev and ev['score'] < .6:
+                    # low rated concert
+                    continue
                 title = ev["short_title"]
                 s = datetime.datetime.strptime(
-                    ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S") + datetime.timedelta(hours=4)
+                    ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S")
                 e = s + datetime.timedelta(hours=3)
                 description = ev["title"]
                 events.append({'title': title, 'start': s.strftime(

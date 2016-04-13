@@ -14,7 +14,7 @@ inputFormat = "%Y-%m-%dT%H:%M:%S.000Z"
 
 @csrf_exempt
 def getEvents(request):
-    min_rating = .5
+    min_rating = 5.0
     try:
         tmp = json.loads(request.GET['settings'])
         min_rating = float(tmp["Minimum Rating"]["value"])
@@ -57,7 +57,7 @@ def formHandling(request):
             jsonDict = json.loads(request.body)
 
             rating = jsonDict["Minimum Rating"]["value"]
-            rating = float(zipCode)
+            rating = float(rating)
             if rating > 0 and rating < 10:
                 return JsonResponse(jsonDict)
             else:

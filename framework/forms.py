@@ -10,6 +10,9 @@ class AppForm(forms.ModelForm):
         model = App
         fields = ['name', 'description', 'version', 'icon_url',
                   'settings_url', 'data_url', 'allow_duplicates']
+        widgets = {
+            'description': forms.Textarea(attrs={'cols': 50, 'rows': 5, 'style': 'resize: none'})
+        }
 
     def clean(self):
         cleaned_data = super(AppForm, self).clean()

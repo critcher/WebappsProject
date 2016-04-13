@@ -404,20 +404,14 @@ def registerApp(request):
     if request.method == 'GET':
         context['form'] = AppForm()
         return render(request, 'registerapp.html', context)
-    form = AppForm(request.POST)
+    app = App(owner=cUser)
+    form = AppForm(request.POST, instance=app)
     context['form'] = form
 
     if not form.is_valid():
         return render(request, 'registerapp.html', context)
-
-    app = App.objects.create(owner=cUser)
-    app.settings_url = form.cleaned_data['settings_url']
-    app.data_url = form.cleaned_data['data_url']
-    app.description = form.cleaned_data['description']
-    app.name = form.cleaned_data['name']
-    app.icon_url = form.cleaned_data['icon_url']
-    app.allow_duplicates = form.cleaned_data['allow_duplicates']
-    app.save()
+        
+    form.save()
 
     return redirect(reverse('devcenter'))
 

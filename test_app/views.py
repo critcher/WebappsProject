@@ -6,7 +6,7 @@ import urllib2
 
 
 query = "https://api.seatgeek.com/2/events?datetime_utc.gte=%s&datetime_utc.lte=%s&taxonomies.name=concert&per_page=100&sort=score.desc"
-descStr = "Venue: <a href='https://www.google.com/maps/@%d,%d' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
+descStr = "Venue: <a href='https://www.google.com/maps/@%d,%d,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
 
 output_format = '%Y-%m-%dT%H:%MZ'
 input_format = '%Y-%m-%d'
@@ -43,7 +43,6 @@ def getEvents(request):
                         ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S")
                     e = s + datetime.timedelta(hours=3)
                     ven = ev['venue']
-                    #"Venue: <a href='https://www.google.com/maps/@%d,%d' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
                     description = descStr % (ven['location']['lat'], ven['location']['lon'], ven['name'], ev['stats']['listing_count'], ev['url'])
                     events.append({'title': title, 'start': s.strftime(
                         output_format), 'end': e.strftime(output_format), "description": description})

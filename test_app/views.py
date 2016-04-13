@@ -6,7 +6,7 @@ import datetime
 import urllib2
 
 
-query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&api_key=" + settings.API_KEY
+query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&vote_average.gte=%f&api_key=" + settings.API_KEY
 descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
 
 
@@ -15,21 +15,18 @@ def getEvents(request):
     min_rating = .5
     try:
         tmp = json.loads(request.GET['settings'])
-        min_rating = tmp["Minimum Rating"]["value"]
+        min_rating = float(tmp["Minimum Rating"]["value"])
     except Exception, e:
         pass
     events = []
     try:
         start = request.GET['start']
         end = request.GET['end']
-        q = query % (start, end)
+        q = query % (start, end, min_rating)
         response = urllib2.urlopen(q)
         data = json.load(response)
         for movie in data["results"]:
             try:
-                if movie['vote_average'] < min_rating:
-                    # low rated movie
-                    continue
                 title = movie["title"]
                 events.append({'title': title, 'start': movie['release_date'], 'allDay': True})
             except KeyError:

@@ -46,6 +46,4 @@ urlpatterns = [
     url(r'^json-to-form/$', views.getFormFromJson, name='json-to-form'),
     url(r'^', views.home),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-urlpatterns += staticfiles_urlpatterns()
+]

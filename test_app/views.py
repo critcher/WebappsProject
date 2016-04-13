@@ -38,13 +38,17 @@ def getEvents(request):
                 data2 = json.load(response2)
                 title = movie["title"]
                 date = movie['release_date']
+                description = ""
                 for release in data2['results']:
                     if release['iso_3166_1'] == "US":
                         tmpDate = datetime.datetime.strptime(release['release_dates'][0]['release_date'], inputFormat)
                         date = tmpDate.strftime("%Y-%m-%d")
+                        mpaa = release['release_dates'][0]['certification']
+                        if mpaa == "":
+                            mpaa = "N/A"
+                        description = descStr % (movie['vote_average'], mpaa, movie['overview'])
                         break
-                description = descStr % ()
-                events.append({'title': title, 'start': date, 'allDay': True, 'description': })
+                events.append({'title': title, 'start': date, 'allDay': True, 'description': description})
             except KeyError:
                 pass
 

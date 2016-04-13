@@ -26,7 +26,7 @@ def getEvents(request):
     try:
         # Move the release date back a bit because this api is stupid
         startTmp = datetime.datetime.strptime(request.GET['start'], "%Y-%m-%d")
-        startTmp -= datetime.timedelta(month=1, days = 15)
+        startTmp -= datetime.timedelta(weeks=7)
         start = startTmp.strftime('%Y-%m-%d')
         end = request.GET['end']
         q = query % (start, end, max_mpaa, min_rating)

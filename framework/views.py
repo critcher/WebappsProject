@@ -278,7 +278,7 @@ def profile(request):
     context['author'] = userMatch.username
     context['firstname'] = userMatch.first_name
     context['lastname'] = userMatch.last_name
-    
+
     profMatch = CalendarUser.objects.get(user=userMatch)
     context['profile'] = profMatch
     return render(request, 'profile.html', context)
@@ -359,7 +359,7 @@ def devCenterPage(request):
 @login_required
 def deleteApp(request, idOfApp):
     cUser = CalendarUser.objects.get(user=request.user)
-    app = get_object_or_404(App, id=idOfApp, owner=cUser)    
+    app = get_object_or_404(App, id=idOfApp, owner=cUser)
     app = App.objects.get(id=idOfApp)
     app.delete()
     return redirect(reverse('devcenter'))
@@ -410,7 +410,7 @@ def registerApp(request):
 
     if not form.is_valid():
         return render(request, 'registerapp.html', context)
-        
+
     form.save()
 
     return redirect(reverse('devcenter'))

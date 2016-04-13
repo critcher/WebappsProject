@@ -13,20 +13,23 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-12 text-center">	
-
-		{%for app in availableApps%}
-		<div class="panel">
-			<img src="{{app.icon_url}}" width="40" height="40"> 
-			Name: {{app.name}} <br>
-			Description: {{app.description}} <br>
-			{{app.version}}<br>
-			<form action="{% url 'appstore' %}" method="post">
-			<input type="hidden" name="app" value="{{app.id}}">
-			<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'appstore' %}">Buy me!</button>
-			{% csrf_token %}
-			</form>
-		</div>
-		{%endfor%}
+			<div class = "row">
+				{%for app in availableApps%}
+				<div class = "col-xs-4 text-center">
+					<div class="panel">
+						<img src="{{app.icon_url}}" width="40" height="40"> 
+						Name: {{app.name}} <br>
+						Description: {{app.description}} <br>
+						{{app.version}}<br>
+						<form action="{% url 'appstore' %}" method="post">
+							<input type="hidden" name="app" value="{{app.id}}">
+							<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'appstore' %}">Buy me!</button>
+							{% csrf_token %}
+						</form>
+					</div>
+				</div>
+				{%endfor%}
+			</div>
 		</div>
 	</div>
 

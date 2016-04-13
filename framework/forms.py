@@ -6,6 +6,10 @@ from django.core.validators import URLValidator
 
 
 class AppForm(forms.ModelForm):
+    settings_url = forms.CharField(validators=[URLValidator])
+    data_url = forms.CharField(validators=[URLValidator])
+    icon_url = forms.CharField(validators=[URLValidator])
+
     class Meta:
         model = App
         fields = ['name', 'description', 'version', 'icon_url',
@@ -43,7 +47,7 @@ class RegisterForm(forms.Form):
     last_name = forms.CharField(
         max_length=24, label="Last Name", widget=widgetForCSS)
     email = forms.CharField(max_length=40, widget=widgetForCSS)
-    isDev = forms.BooleanField(label = "Developer?", required=False)
+    isDev = forms.BooleanField(label="Developer?", required=False)
 
     def clean(self):
         cleanDict = super(RegisterForm, self).clean()

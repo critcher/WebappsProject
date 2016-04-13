@@ -6,25 +6,27 @@ import datetime
 import urllib2
 
 
-query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&vote_average.gte=%f&vote_count.gte=10&api_key=" + settings.API_KEY
+query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&certification_country=US&certification.lte=%s&vote_average.gte=%f&vote_count.gte=10&api_key=" + settings.API_KEY
 query2 = "https://api.themoviedb.org/3/movie/%d/release_dates?api_key=" + settings.API_KEY
-descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
+descStr = "Score: %.1f/10, Rated %s<br>Plot: %s"
 
 inputFormat = "%Y-%m-%dT%H:%M:%S.000Z"
 
 @csrf_exempt
 def getEvents(request):
     min_rating = 5.0
+    max_mpaa = 'R'
     try:
         tmp = json.loads(request.GET['settings'])
-        min_rating = float(tmp["Minimum Rating"]["value"])
+        min_rating = float(tmp["Minimum Score"]["value"])
+        max_mpaa = tmp["Maximum Rating"]["value"]
     except Exception, e:
         pass
     events = []
     try:
         start = request.GET['start']
         end = request.GET['end']
-        q = query % (start, end, min_rating)
+        q = query % (start, end, max_mpaa, min_rating)
         response = urllib2.urlopen(q)
         data = json.load(response)
         for movie in data["results"]:
@@ -41,7 +43,8 @@ def getEvents(request):
                         tmpDate = datetime.datetime.strptime(release['release_dates'][0]['release_date'], inputFormat)
                         date = tmpDate.strftime("%Y-%m-%d")
                         break
-                events.append({'title': title, 'start': date, 'allDay': True})
+                description = descStr % ()
+                events.append({'title': title, 'start': date, 'allDay': True, 'description': })
             except KeyError:
                 pass
 
@@ -58,7 +61,7 @@ def formHandling(request):
         try:
             jsonDict = json.loads(request.body)
 
-            rating = jsonDict["Minimum Rating"]["value"]
+            rating = jsonDict["Minimum Score"]["value"]
             rating = float(rating)
             if rating > 0 and rating < 10:
                 return JsonResponse(jsonDict)
@@ -69,6 +72,6 @@ def formHandling(request):
             return JsonResponse({"error": "Minimmum rating must be between 0 and 10."})
     else:
         return JsonResponse({"fields": [
-            {"type": "number", "name": "Minimum Rating",
-                "required": True, "default": 5.0}
+            {"type": "number", "name": "Minimum Score", "required": True, "default": 5.0},
+            {"type": "choice", "name": "Maximum Rating", "required": True, "choices": ["G", "PG", "PG-13", "R"], "default": "R"}
         ]})

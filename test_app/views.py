@@ -1,23 +1,21 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 import json
 import datetime
 import urllib2
 
 
-query = "https://api.seatgeek.com/2/events?datetime_utc.gte=%s&datetime_utc.lte=%s&taxonomies.name=concert&per_page=100&sort=score.desc"
+query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&api_key=" + settings.API_KEY
 descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
-
-output_format = '%Y-%m-%dT%H:%MZ'
-input_format = '%Y-%m-%d'
 
 
 @csrf_exempt
 def getEvents(request):
-    loc = ""
+    min_rating = .5
     try:
         tmp = json.loads(request.GET['settings'])
-        loc = tmp["Zip Code"]["value"]
+        min_rating = tmp["Minimum Rating"]["value"]
     except Exception, e:
         pass
     events = []
@@ -25,29 +23,17 @@ def getEvents(request):
         start = request.GET['start']
         end = request.GET['end']
         q = query % (start, end)
-        if loc is not "":
-            q += "&postal_code=%s" % (loc)
         response = urllib2.urlopen(q)
         data = json.load(response)
-        if "events" in data:
-            for ev in data["events"]:
-                try:
-                    if "date_tbd" in ev and ev["date_tbd"]:
-                        # no announced start/end time
-                        continue
-                    if 'score' in ev and ev['score'] < .6:
-                        # low rated concert
-                        continue
-                    title = ev["short_title"]
-                    s = datetime.datetime.strptime(
-                        ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S")
-                    e = s + datetime.timedelta(hours=3)
-                    ven = ev['venue']
-                    description = descStr % (ven['location']['lat'], ven['location']['lon'], ven['name'], ev['stats']['listing_count'], ev['url'])
-                    events.append({'title': title, 'start': s.strftime(
-                        output_format), 'end': e.strftime(output_format), "description": description})
-                except KeyError:
-                    pass
+        for movie in data["results"]:
+            try:
+                if movie['vote_average'] < min_rating:
+                    # low rated movie
+                    continue
+                title = movie["title"]
+                events.append({'title': title, 'allDay': True})
+            except KeyError:
+                pass
 
     except Exception, ex:
         print ex
@@ -62,17 +48,17 @@ def formHandling(request):
         try:
             jsonDict = json.loads(request.body)
 
-            zipCode = jsonDict["Zip Code"]["value"]
-            zipCode = int(zipCode)
-            if zipCode > 0 and zipCode < 99999:
+            rating = jsonDict["Minimum Rating"]["value"]
+            rating = float(zipCode)
+            if rating > 0 and rating < 10:
                 return JsonResponse(jsonDict)
             else:
                 raise KeyError
         except Exception, e:
             print e
-            return JsonResponse({"error": "Form error."})
+            return JsonResponse({"error": "Minimmum rating must be between 0 and 10."})
     else:
         return JsonResponse({"fields": [
-            {"type": "number", "name": "Zip Code",
-                "required": True, "default": 15217}
+            {"type": "number", "name": "Minimum Rating",
+                "required": True, "default": 5.0}
         ]})

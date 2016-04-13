@@ -7,6 +7,7 @@ import urllib2
 
 
 query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&vote_average.gte=%f&api_key=" + settings.API_KEY
+query2 = "https://api.themoviedb.org/3/movie/%d/release_dates?api_key=" + settings.API_KEY
 descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
 
 
@@ -27,8 +28,16 @@ def getEvents(request):
         data = json.load(response)
         for movie in data["results"]:
             try:
+                q2 = query2 % (movie['id'])
+                response2 = urllib2.urlopen(q2)
+                data2 = json.load(response2)
                 title = movie["title"]
-                events.append({'title': title, 'start': movie['release_date'], 'allDay': True})
+                date = movie['release_date']
+                for release in data2['results']:
+                    if release['iso_3166_1'] == "US":
+                        date = release['release_dates'][0]['release_date']
+                        break
+                events.append({'title': title, 'start': date, 'allDay': True})
             except KeyError:
                 pass
 

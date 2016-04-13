@@ -26,7 +26,6 @@ urlpatterns = [
         name='logout'),
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^register/$', views.register, name='register'),
-    url(r'^about/$', views.about, name='about'),
     url(r'^registerapp/$', views.registerApp, name='addapp'),
     url(r'^devcenter/$', views.devCenterPage, name='devcenter'),
     url(r'^deleteapp/(?P<idOfApp>\d+)/$', views.deleteApp, name='deleteapp'),

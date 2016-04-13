@@ -254,14 +254,6 @@ def auth_return(request):
         return redirect(reverse('profile'))
 
 
-def about(request):
-    context = {}
-    context['errors'] = []
-    context['messages'] = []
-    context['user'] = request.user
-    return render(request, 'about.html', context)
-
-
 def signIn(request):
     context = {}
     if (request.method == "GET"):

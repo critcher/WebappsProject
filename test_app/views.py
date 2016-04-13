@@ -3,57 +3,89 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
 import datetime
+from django.utils.dateparse import parse_datetime
 import urllib2
+import xml.etree.ElementTree as ET
 
 
-query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&certification_country=US&certification.lte=%s&vote_average.gte=%f&vote_count.gte=10&api_key=" + settings.API_KEY
-query2 = "https://api.themoviedb.org/3/movie/%d/release_dates?api_key=" + settings.API_KEY
-descStr = "Score: %.1f/10, Rated %s<br>Plot: %s"
+query = "http://graphical.weather.gov/xml/SOAP_server/ndfdXMLclient.php?whichClient=NDFDgenMultiZipCode&zipCodeList=%d&product=time-series&Unit=e&maxt=maxt&mint=mint&pop12=pop12&sky=sky"
+descStr = "High/Low (F): %s/%s<br>%s%s%% chance of precipitation."
 
-inputFormat = "%Y-%m-%dT%H:%M:%S.000Z"
+def getCloudinessString(chance):
+    if (chance < 20):
+        return "Clear skies with "
+    elif (chance < 50):
+        return "Partly cloudy with "
+    elif (chance < 70):
+        return "Mostly cloudy with "
+    else:
+        return "Dreary with "
+
+def fillWeatherInfo(dateWeather, dataGroup, key, timeLayouts):
+    tInd = 0
+    times = timeLayouts[dataGroup.get('time-layout')].findall('start-valid-time')
+    for t in dataGroup.iter('value'):
+        date = parse_datetime(times[tInd].text).date()
+        tInd += 1
+        if date in dateWeather:
+            if key in dateWeather[date]:
+                dateWeather[date][key] += [t.text]
+            else:
+                dateWeather[date][key] = [t.text]
+        else:
+            dateWeather[date] = {key: [t.text]}
 
 @csrf_exempt
 def getEvents(request):
-    min_rating = 5.0
-    max_mpaa = 'R'
-    try:
-        tmp = json.loads(request.GET['settings'])
-        min_rating = float(tmp["Minimum Score"]["value"])
-        max_mpaa = tmp["Maximum Rating"]["value"]
-    except Exception, e:
-        pass
     events = []
     try:
-        # Move the release date back a bit because this api is stupid
-        startTmp = datetime.datetime.strptime(request.GET['start'], "%Y-%m-%d")
-        startTmp -= datetime.timedelta(weeks=7)
-        start = startTmp.strftime('%Y-%m-%d')
-        end = request.GET['end']
-        q = query % (start, end, max_mpaa, min_rating)
+        tmp = json.loads(request.GET['settings'])
+        zipCode = float(tmp["Zip Code"]["value"])
+    except Exception, e:
+        print e
+        return JsonResponse(events, safe=False)
+    try:
+        q = query % (zipCode)
         response = urllib2.urlopen(q)
-        data = json.load(response)
-        for movie in data["results"]:
-            if movie['original_language'] != 'en':
-                continue
-            try:
-                q2 = query2 % (movie['id'])
-                response2 = urllib2.urlopen(q2)
-                data2 = json.load(response2)
-                title = movie["title"]
-                date = movie['release_date']
-                description = ""
-                for release in data2['results']:
-                    if release['iso_3166_1'] == "US":
-                        tmpDate = datetime.datetime.strptime(release['release_dates'][0]['release_date'], inputFormat)
-                        date = tmpDate.strftime("%Y-%m-%d")
-                        mpaa = release['release_dates'][0]['certification']
-                        if mpaa == "":
-                            mpaa = "N/A"
-                        description = descStr % (movie['vote_average'], mpaa, movie['overview'])
-                        break
-                events.append({'title': title, 'start': date, 'allDay': True, 'description': description})
-            except KeyError:
-                pass
+        root = ET.fromstring(response.read())
+        data = root.find('data').find('parameters')
+        timeLayouts = {}
+        dateWeather = {}
+        # Get time layout info
+        for tLayout in root.find('data').iter('time-layout'):
+            timeLayouts[tLayout.find('layout-key').text] = tLayout
+        # Get temperature data
+        for tempGroup in data.iter('temperature'):
+            if tempGroup.get('type') == 'maximum':
+                fillWeatherInfo(dateWeather, tempGroup, 'maxT', timeLayouts)
+            else:
+                fillWeatherInfo(dateWeather, tempGroup, 'minT', timeLayouts)
+
+        rainGroup = data.find('probability-of-precipitation')
+        fillWeatherInfo(dateWeather, rainGroup, 'rain', timeLayouts)
+        cloudGroup = data.find('cloud-amount')
+        fillWeatherInfo(dateWeather, cloudGroup, 'clouds', timeLayouts)
+        for d in dateWeather:
+            if 'maxT' in dateWeather[d]:
+                maxT = dateWeather[d]['maxT'][0]
+            else:
+                maxT = "N/A"
+            if 'minT' in dateWeather[d]:
+                minT = dateWeather[d]['minT'][0]
+            else:
+                minT = "N/A"
+            if 'rain' in dateWeather[d]:
+                tmp = [int(v) for v in dateWeather[d]['rain']]
+                rain = str(int(sum(tmp)/len(tmp)))
+            else:
+                rain = "N/A"
+            if 'clouds' in dateWeather[d]:
+                tmp = [int(v) for v in dateWeather[d]['clouds']]
+                clouds = str(int(sum(tmp)/len(tmp)))
+            else:
+                clouds = "N/A"
+            description = descStr % (maxT, minT, getCloudinessString(int(clouds)), rain)
+            events.append({'title': "Weather", 'start': d.strftime("%Y-%m-%d"), 'allDay': True, 'description': description})
 
     except Exception, ex:
         print ex
@@ -68,17 +100,18 @@ def formHandling(request):
         try:
             jsonDict = json.loads(request.body)
 
-            rating = jsonDict["Minimum Score"]["value"]
-            rating = float(rating)
-            if rating > 0 and rating < 10:
-                return JsonResponse(jsonDict)
+            zipCode = jsonDict["Zip Code"]["value"]
+            q = query % (zipCode)
+            response = urllib2.urlopen(q)
+            root = ET.fromstring(response.read())
+            if root.tag == 'error':
+                return JsonResponse({"error": "Invalid Zip Code"})
             else:
-                raise KeyError
+                return JsonResponse(jsonDict)
         except Exception, e:
             print e
-            return JsonResponse({"error": "Minimmum rating must be between 0 and 10."})
+            return JsonResponse({"error": "App Error"})
     else:
         return JsonResponse({"fields": [
-            {"type": "number", "name": "Minimum Score", "required": True, "default": 5.0},
-            {"type": "choice", "name": "Maximum Rating", "required": True, "choices": ["G", "PG", "PG-13", "R"], "default": "R"}
+            {"type": "number", "name": "Zip Code", "required": True}
         ]})

@@ -251,7 +251,7 @@ def auth_return(request):
         storage.put(credential)
         return HttpResponseRedirect(reverse('checkAuth'))
     except FlowExchangeError:
-        return redirect(reverse('about'))
+        return redirect(reverse('profile'))
 
 
 def about(request):
@@ -278,28 +278,16 @@ def signIn(request):
 
 
 @login_required
-def profile(request, userArg):
+def profile(request):
     context = {}
     context['errors'] = []
-    try:
-        userMatch = User.objects.get(username__exact=userArg)
-    except ObjectDoesNotExist:
-        context['errors'].append("could not find object")
-        return render(request, 'main.html', context)
-    except MultipleObjectsReturned:
-        context['errors'].append("multiple objects returned")
-        return render(request, 'main.html', context)
-    context['author'] = userArg
+    userMatch = request.user
+
+    context['author'] = userMatch.username
     context['firstname'] = userMatch.first_name
     context['lastname'] = userMatch.last_name
-    try:
-        profMatch = CalendarUser.objects.get(user=userMatch)
-    except ObjectDoesNotExist:
-        context['errors'].append("You dont have a profile yet!")
-        return redirect(reverse("editprofile"))
-    except MultipleObjectsReturned:
-        context['errors'].append("multiple objects returned")
-        return render(request, 'main.html', context)
+    
+    profMatch = CalendarUser.objects.get(user=userMatch)
     context['profile'] = profMatch
     return render(request, 'profile.html', context)
 
@@ -377,10 +365,9 @@ def devCenterPage(request):
 
 
 @login_required
-def deleteApp(request):
-    if request.method == 'GET' or "app" not in request.POST:
-        return redirect(reverse('devcenter'))
-    idOfApp = request.POST['app']
+def deleteApp(request, idOfApp):
+    cUser = CalendarUser.objects.get(user=request.user)
+    app = get_object_or_404(App, id=idOfApp, owner=cUser)    
     app = App.objects.get(id=idOfApp)
     app.delete()
     return redirect(reverse('devcenter'))
@@ -388,19 +375,20 @@ def deleteApp(request):
 
 @login_required
 def editApp(request, idOfApp):
-    if request.method == 'GET':
-        return redirect(reverse('devcenter'))
     usr = request.user
     cUser = CalendarUser.objects.get(user=usr)
     if not cUser.isDev:
         return redirect(reverse('editprofile'))
-    print request.POST
 
-    app = App.objects.get(id=idOfApp)
+    app = get_object_or_404(App, id=idOfApp, owner=cUser)
     context = {}
     context['errors'] = []
     context['messages'] = []
     context['app'] = app
+
+    if request.method == 'GET':
+        context['form'] = AppForm(instance=app)
+        return render(request, 'editapp.html', context)
 
     form = AppForm(request.POST, instance=app)
     context['form'] = form
@@ -439,7 +427,7 @@ def registerApp(request):
     app.allow_duplicates = form.cleaned_data['allow_duplicates']
     app.save()
 
-    return render(request, 'registerapp.html', context)
+    return redirect(reverse('devcenter'))
 
 
 def testAppForm(request):

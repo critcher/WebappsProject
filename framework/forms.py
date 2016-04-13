@@ -8,7 +8,7 @@ from django.core.validators import URLValidator
 class AppForm(forms.ModelForm):
     class Meta:
         model = App
-        fields = ['description', 'name', 'version', 'icon_url',
+        fields = ['name', 'description', 'version', 'icon_url',
                   'settings_url', 'data_url', 'allow_duplicates']
 
     def clean(self):
@@ -40,7 +40,7 @@ class RegisterForm(forms.Form):
     last_name = forms.CharField(
         max_length=24, label="Last Name", widget=widgetForCSS)
     email = forms.CharField(max_length=40, widget=widgetForCSS)
-    isDev = forms.BooleanField(required=False)
+    isDev = forms.BooleanField(label = "Developer?", required=False)
 
     def clean(self):
         cleanDict = super(RegisterForm, self).clean()

@@ -48,12 +48,12 @@ class App(models.Model):
     # Can be used to detect that a user's AppSettings are out of
     # date and might need to be prompted again
     version = models.CharField(max_length=60)
-    icon_url = models.CharField(blank=True, max_length=256)
+    icon_url = models.CharField(max_length=256)
     # URL that we send a GET request to in order to find out what
     # settings the user can set. Also the URL we send a POST request
     # with the user chosen settings for verification. If blank,
     # no special settings are needed
-    settings_url = models.CharField(blank=True, max_length=256)
+    settings_url = models.CharField(max_length=256)
     # URL that we send the request to in order to get the actual
     # data from the app
     data_url = models.CharField(max_length=256)

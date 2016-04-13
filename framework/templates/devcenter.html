@@ -28,15 +28,11 @@
 			{{app.version}}<br>
 			{{app.settings_url}}
 			{{app.data_url}}
-			<form action="{% url 'editapp' app.id %}" method="post">
-			<input type="hidden" name="app" value="{{app.id}}">
-			<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'editapp' app.id %}">Edit App</button>
-			{% csrf_token %}
+			<form action="{% url 'editapp' app.id %}" method="get">
+			<button type="submit" value="{{app.id}}" class="btn btn-default">Edit App</button>
 			</form>
-			<form action="{% url 'deleteapp' %}" method="post">
-			<input type="hidden" name="app" value="{{app.id}}">
-			<button type="submit" value="{{app.id}}" class="btn btn-default" href="{% url 'deleteapp' %}">DELETE</button>
-			{% csrf_token %}
+			<form action="{% url 'deleteapp' app.id %}" method="get">
+			<button type="submit" class="btn btn-default">DELETE</button>
 			</form>
 		</div>
 		{%endfor%}

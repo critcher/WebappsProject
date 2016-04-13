@@ -38,11 +38,6 @@
 				<a class="btn btn-default" href="{% url 'devcenter' %}">Dev Center</a>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-xs-12 text-center">
-				<!--Delete app goes here/....but do this in the dev center anyway-->
-			</div>
-		</div>
 		{%endif%}
 		<div class="row">
 			<div class="col-xs-12 text-center">
@@ -51,12 +46,12 @@
 		</div>
 		<div class="row">
 			<div class="col-xs-12 text-center">
-				<a class="btn btn-default" href="{% url 'editapp_settings' %}">Edit AppSettings</a>
+				<a class="btn btn-default" href="{% url 'editapp_settings' %}">Edit App Settings</a>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12 text-center">
-				<a class="btn btn-default" href="{% url 'profile' user%}">Profile</a>
+				<a class="btn btn-default" href="{% url 'profile'%}">Profile</a>
 			</div>
 		</div>
 		<div class="row">

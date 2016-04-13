@@ -10,6 +10,7 @@ query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s
 query2 = "https://api.themoviedb.org/3/movie/%d/release_dates?api_key=" + settings.API_KEY
 descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
 
+inputFormat = "%Y-%m-%dT%H:%M:%S.000Z"
 
 @csrf_exempt
 def getEvents(request):
@@ -35,7 +36,8 @@ def getEvents(request):
                 date = movie['release_date']
                 for release in data2['results']:
                     if release['iso_3166_1'] == "US":
-                        date = release['release_dates'][0]['release_date']
+                        tmpDate = datetime.datetime.strptime(release['release_dates'][0]['release_date'], inputFormat)
+                        date = tmpDate.strftime("%Y-%m-%d")
                         break
                 events.append({'title': title, 'start': date, 'allDay': True})
             except KeyError:

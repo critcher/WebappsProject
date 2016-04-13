@@ -6,7 +6,7 @@ import datetime
 import urllib2
 
 
-query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&vote_average.gte=%f&api_key=" + settings.API_KEY
+query = "https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s&vote_average.gte=%f&vote_count.gte=10&api_key=" + settings.API_KEY
 query2 = "https://api.themoviedb.org/3/movie/%d/release_dates?api_key=" + settings.API_KEY
 descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
 
@@ -28,6 +28,8 @@ def getEvents(request):
         response = urllib2.urlopen(q)
         data = json.load(response)
         for movie in data["results"]:
+            if movie['original_language'] != 'en':
+                continue
             try:
                 q2 = query2 % (movie['id'])
                 response2 = urllib2.urlopen(q2)

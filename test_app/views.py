@@ -6,7 +6,7 @@ import urllib2
 
 
 query = "https://api.seatgeek.com/2/events?datetime_utc.gte=%s&datetime_utc.lte=%s&taxonomies.name=concert&per_page=100&sort=score.desc"
-descStr = "Venue: <a href='https://www.google.com/maps/@%d,%d,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
+descStr = "Venue: <a href='https://www.google.com/maps/@%f,%f,15z' target='_blank'>%s</a><br>%d tickets left on <a href='%s' target='_blank'>SeatGeek</a>"
 
 output_format = '%Y-%m-%dT%H:%MZ'
 input_format = '%Y-%m-%d'

@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'checkAuth', views.checkAuth, name='checkAuth'),
     url(r'oauth2callback', views.auth_return, name='oauth2return'),
     url(r'^$', views.home, name='main'),
+    url(r'^json-form-gen/$', views.testAppForm, name='json_form_generator'),
     url(r'^json-test/$', views.testAppForm, name='json_test'),
     url(r'^json-events/$', views.getEventsJSON, name='json_events'),
     url(r'^form-to-json/$', views.getFormJson, name='form_to_json'),

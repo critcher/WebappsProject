@@ -15,9 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import url
 from . import views
-from django.conf.urls.static import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from project import settings
 
 
 urlpatterns = [

@@ -3,11 +3,10 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from forms import RegisterForm, SignInForm, UserForm, AppForm
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from models import CalendarUser, AppSettings, App
 import jsonschema
 import json
@@ -175,7 +174,6 @@ def gCalToFullCalEventAdapter(gCalEvent):
     """
     Returns FullCalendar Event Json Representation of 
     some Google Calendar Event object
-    Overtime, I imagine this will become increasingly sophisticated
     """
     fCalEvent = {}
     fCalEvent["title"] = gCalEvent["summary"]

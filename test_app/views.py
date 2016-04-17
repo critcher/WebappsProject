@@ -103,5 +103,5 @@ def formHandling(request):
             return JsonResponse({"error": "Form error."})
     else:
         return JsonResponse({"fields": [
-                     {"type": "choice", "name": "Team", "required": True, "choices": teamMapping.keys()}
+                     {"type": "choice", "name": "Team", "required": True, "choices": teamMapping.keys(), "default": "Arizona Diamondbacks"}
       ]})

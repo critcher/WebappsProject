@@ -176,3 +176,7 @@ LOGGING = {
         },
     }
 }
+
+text_file = open("../framework/client_secrets.json", "w")
+text_file.write(os.environ.get('CLIENT_SECRETS_FILE'))
+text_file.close()

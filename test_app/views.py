@@ -14,7 +14,7 @@ input_format = '%Y-%m-%d'
 
 @csrf_exempt
 def getEvents(request):
-    loc = ""
+    loc = "15217"
     try:
         tmp = json.loads(request.GET['settings'])
         loc = tmp["Zip Code"]["value"]

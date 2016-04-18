@@ -291,19 +291,19 @@ def editProfile(request):
     if request.method == 'GET':
         context['userform'] = UserForm(instance=request.user,
                                        prefix="userform")
-        return render(request, 'editprofile.html', context)
+        return render(request, 'editProfile.html', context)
     userform = UserForm(
         data=request.POST, instance=request.user, prefix="userform")
     context['userform'] = userform
     if not userform.is_valid():
         context['errors'].append("form data invalid")
-        return render(request, 'editprofile.html', context)
+        return render(request, 'editProfile.html', context)
     userform.save()
     currentUser = request.user
     currentUser.firstname = userform.cleaned_data['first_name']
     currentUser.lastname = userform.cleaned_data['last_name']
     currentUser.save()
-    return render(request, 'editprofile.html', context)
+    return render(request, 'editProfile.html', context)
 
 
 @transaction.atomic

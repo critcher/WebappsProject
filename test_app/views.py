@@ -16,22 +16,24 @@ input_format = '%Y-%m-%d'
 def getEvents(request):
     loc = "15217"
     minPopularity = 0.6
-    radius = 30
+    radius = "30"
     try:
         tmp = json.loads(request.GET['settings'])
         loc = tmp["Zip Code"]["value"]
         minPopularity = tmp["Popularity Threshold"]["value"]
         radius = tmp["Range"]["value"]
-        radius = round(abs(radius))
-        if radius<1:
+        radius = round(abs(float(radius)))
+        minPopularity = float(minPopularity)
+        if radius < 1:
             radius = 1
+        radius = str(radius)
     except Exception, e:
-        pass
+        print e
     events = []
     try:
         start = request.GET['start']
         end = request.GET['end']
-        q = query % (start, end, str(radius))
+        q = query % (start, end, radius)
         if loc is not "":
             q += "&postal_code=%s" % (loc)
         response = urllib2.urlopen(q)
@@ -46,19 +48,19 @@ def getEvents(request):
                         # low rated concert
                         continue
                     title = ev["short_title"]
+                    print title
+                    print ev["datetime_utc"]
                     s = datetime.datetime.strptime(
                         ev["datetime_utc"], "%Y-%m-%dT%H:%M:%S")
                     e = s + datetime.timedelta(hours=3)
                     ven = ev['venue']
                     description = descStr % (ven['location']['lat'], ven['location']['lon'], ven[
                                              'name'], ev['stats']['listing_count'], ev['url'])
-                    events.append({'title': title, 'start': s.strftime(
-                        output_format), 'end': e.strftime(output_format), "description": description})
-                except KeyError:
-                    pass
+                    events.append({'title': title, 'start': s.strftime(output_format), 'end': e.strftime(output_format), "description": description})
+                except Exception:
+                    continue
 
     except Exception, ex:
-        print ex
         return JsonResponse(events, safe=False)
 
     return JsonResponse(events, safe=False)
@@ -83,8 +85,9 @@ def formHandling(request):
         return JsonResponse({"fields": [
             {"type": "number", "name": "Zip Code",
                 "required": True, "default": 15217},
-            {"type": "choice", "name": "Popularity Threshold", 
-            "required": True, "choices": ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"], 
-            "default": "2"},
-            {"type": "number", "name": "Range", "required": True, "default": 30} 
+            {"type": "choice", "name": "Popularity Threshold",
+             "required": True, "choices": ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"],
+             "default": "2"},
+            {"type": "number", "name": "Range",
+                "required": True, "default": 30}
         ]})

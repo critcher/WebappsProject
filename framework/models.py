@@ -9,26 +9,51 @@ import datetime
 
 
 class FlowModel(models.Model):
+    """Wrapper for oauth2client's FlowField uniquely associated with User."""
     id = models.OneToOneField(User, primary_key=True)
     flow = FlowField()
 
 
 class CredentialsModel(models.Model):
+    """Wrapper for oauth2client's CredentialsField
+    uniquely associated with User"""
     id = models.OneToOneField(User, primary_key=True)
     credential = CredentialsField()
 
 
 class CalendarUser(models.Model):
+    """Wraps django's User model with add'l attributes.
+
+    Attributes:
+        user (User): pointer to target user to associate with.
+        isOAuthed (bool): tracks status of user if they have initiated OAuth,
+        or have revoked OAuth.
+        isDev (bool): determines if user can access Dev tools,
+        or is a Developer User-class.
+    """
     user = models.OneToOneField(User, related_name='userPointer')
     isOAuthed = models.BooleanField(default=False)
     isDev = models.BooleanField(default=False)
 
 
 class Calendar(models.Model):
+    """Container of Event objects"""
     owner = models.OneToOneField(CalendarUser, on_delete=models.CASCADE)
 
 
 class Event(models.Model):
+    """Representation of Events, associated with Calendar.
+
+    Attributes:
+        description (str): Description of event.
+        name (str): Name of event.
+        start_timestamp (str): ISO timestamp for event's start time.
+        end_timestamp (str): ISO timestamp for event's end time.
+        icon_url (str): string rep of event's icon url.
+        calendar (Calendar): pointer to containing Calendar instance.
+        source (AppSetting): pointer to AppSetting from which event
+        was created.
+    """
     description = models.CharField(blank=True, max_length=100)
     name = models.CharField(blank=True, max_length=60)
     start_timestamp = models.DateTimeField()
@@ -42,6 +67,22 @@ class Event(models.Model):
 
 
 class App(models.Model):
+    """Contains necesary data to make requests to 3rd party app
+
+    Attributes:
+        owner (CalendarUser): pointer to dev-class user that created
+        this instance.
+        description (str): description of App.
+        name (str): name of App.
+        version (str): version of App.
+        icon_url (str): App's icon location for display and visual
+        representation.
+        settings_url (str): Callback URL for JSON data to build an App Form.
+        data_url (str): Callback URL to send submitted form data to,
+        which returns Events as Json.
+        allows_duplicates (bool): flag for whether or not App can be bought
+        multiple times by one user.
+    """
     owner = models.ForeignKey(CalendarUser, on_delete=models.CASCADE)
     description = models.CharField(blank=True, max_length=1000)
     name = models.CharField(max_length=60)
@@ -63,6 +104,7 @@ class App(models.Model):
 
 
 class Color(models.Model):
+    """Adapter for web color representations."""
     red = models.PositiveIntegerField(
         validators=[MaxValueValidator(255)], default=0)
     green = models.PositiveIntegerField(
@@ -89,6 +131,17 @@ class Color(models.Model):
 
 
 class AppSettings(models.Model):
+    """AppSettings store App and User-set specific data used on calendar view calls
+
+    Attributes:
+        user (CalendarUser): creator/editor/owner of instance.
+        settings_json (str): JSON that represents form, and submitted form data
+        version (str): used to match against App version
+        app (App): pointer to App instance for these settings
+        last_updated_timestamp (str): used to track changes for ajax calls
+        color (Color): color rep for appsetting, customized by user,
+        colors events in calendar
+    """
     user = models.ForeignKey(CalendarUser, on_delete=models.CASCADE)
     settings_json = models.TextField()
     # Can be used to detect that a user's AppSettings are out of

@@ -31,11 +31,14 @@ CLIENT_SECRETS = os.path.join(
 
 
 def home(request):
+    """Home URL catch-all-else Forwards to Calendar view"""
     return viewCalendar(request)
 
 
 @login_required
 def viewCalendar(request):
+    """Standard fullCal view, checks if user is OAuthed
+    """
     context = {}
     context['errors'] = []
     context['messages'] = []
@@ -55,6 +58,7 @@ def viewCalendar(request):
 
 @login_required
 def removeApp(request):
+    """Call for AppSetting removal from user's collection"""
     if request.method == 'GET' or not request.POST['appSettingID']:
         return redirect(reverse('editapp_settings'))
     settingID = request.POST['appSettingID']
@@ -67,6 +71,7 @@ def removeApp(request):
 
 @login_required
 def getFormFromJson(request):
+    """Produce valid django form from JSON"""
     context = {}
     if request.method == "GET":
         return Http404
@@ -87,6 +92,7 @@ def getFormFromJson(request):
 
 @login_required
 def viewAppForms(request):
+    """Displays user's appSettings as forms to be editted and resubmitted"""
     context = {}
     context['errors'] = []
     context['messages'] = []
@@ -101,6 +107,7 @@ def viewAppForms(request):
 
 @login_required
 def appStore(request):
+    """Displays all available App instances to current user"""
     context = {}
     context['errors'] = []
     context['messages'] = []
@@ -131,6 +138,17 @@ def appStore(request):
 
 @login_required
 def getEventsJSON(request):
+    """Gets all user events from OAuthed Google User's Calendar
+
+    Args:
+        request (dict):
+            request['start']: beginning of period to query gCal API for events
+            request['end']: end of period of gCal query
+            user(User): user making request
+
+    Returns:
+        JSON rep of events list from accessed Google Calendar
+    """
     events = []
     if "start" in request.GET and "end" in request.GET:
         try:
@@ -172,7 +190,7 @@ def getEventsJSON(request):
 
 def gCalToFullCalEventAdapter(gCalEvent):
     """
-    Returns FullCalendar Event Json Representation of 
+    Returns: FullCalendar Event Json Representation of 
     some Google Calendar Event object
     """
     fCalEvent = {}
@@ -191,6 +209,7 @@ def gCalToFullCalEventAdapter(gCalEvent):
 @login_required
 @transaction.atomic
 def removeUserOAuth(request):
+    """initiates OAuth revocation"""
     user = request.user
     calUser = CalendarUser.objects.get(user=user)
     if not calUser.isOAuthed:
@@ -212,6 +231,9 @@ def removeUserOAuth(request):
 
 @login_required
 def checkAuth(request):
+    """Checks OAuth status of user, if not 
+    initiates exchange with google's OAuth server
+    """
     REDIRECT_URI = "http://%s%s" % (request.get_host(),
                                     reverse("oauth2return"))
     FLOW = flow_from_clientsecrets(
@@ -238,6 +260,7 @@ def checkAuth(request):
 
 @login_required
 def auth_return(request):
+    """Google OAuth exchange, step 2"""
     user = request.user
     if not xsrfutil.validate_token(
             settings.SECRET_KEY, request.GET['state'], user):
@@ -253,6 +276,7 @@ def auth_return(request):
 
 
 def signIn(request):
+    """Login page form"""
     context = {}
     if (request.method == "GET"):
         context['form'] = SignInForm()
@@ -269,6 +293,7 @@ def signIn(request):
 
 @login_required
 def profile(request):
+    """Profile page"""
     context = {}
     context['errors'] = []
     userMatch = request.user
@@ -284,6 +309,7 @@ def profile(request):
 
 @login_required
 def editProfile(request):
+    """Edit Profile form"""
     context = {}
     context['errors'] = []
     cUser = CalendarUser.objects.get(user=request.user)
@@ -308,6 +334,7 @@ def editProfile(request):
 
 @transaction.atomic
 def register(request):
+    """User Registration form and action"""
     context = {}
     context['errors'] = []
     context['messages'] = []
@@ -342,6 +369,8 @@ def register(request):
 
 @login_required
 def devCenterPage(request):
+    """Dev page with list of Apps created by dev-user
+    """
     usr = request.user
     cUser = CalendarUser.objects.get(user=usr)
     if not cUser.isDev:
@@ -356,6 +385,7 @@ def devCenterPage(request):
 
 @login_required
 def deleteApp(request, idOfApp):
+    """Delete-App call, removes App of given ID"""
     cUser = CalendarUser.objects.get(user=request.user)
     app = get_object_or_404(App, id=idOfApp, owner=cUser)
     app = App.objects.get(id=idOfApp)
@@ -365,6 +395,7 @@ def deleteApp(request, idOfApp):
 
 @login_required
 def editApp(request, idOfApp):
+    """Edit-app call, creates form and submission procedure for App"""
     usr = request.user
     cUser = CalendarUser.objects.get(user=usr)
     if not cUser.isDev:
@@ -415,6 +446,7 @@ def registerApp(request):
 
 
 def testAppForm(request):
+    """Allows dev-users to test and create Json-valid forms for their Apps"""
     context = {}
     context['form_errors'] = []
     context['generated_form'] = ''
@@ -450,6 +482,7 @@ def testAppForm(request):
 
 @login_required
 def getFormJson(request):
+    """Pulls Json form data from App for all instances"""
     try:
         appInstance = AppSettings.objects.get(id=request.POST['id'])
         jsonResp = convertRequestToJson(

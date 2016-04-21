@@ -14,8 +14,8 @@ class AppForm(forms.ModelForm):
         model = App
         fields = ['name', 'description', 'version', 'icon_url',
                   'settings_url', 'data_url', 'allow_duplicates']
-        widgets = {
-            'description': forms.Textarea(attrs={'cols': 50, 'rows': 5, 'style': 'resize: none'})
+        widgets = {'description': forms.Textarea(
+            attrs={'cols': 50, 'rows': 5, 'style': 'resize: none'})
         }
 
     def clean(self):
@@ -75,7 +75,8 @@ class SignInForm(forms.Form):
             return valid
 
         self.user = authenticate(
-            username=self.cleaned_data['username'], password=self.cleaned_data['password'])
+            username=self.cleaned_data['username'],
+            password=self.cleaned_data['password'])
         if (not self.user):
             self.add_error(None, "Invalid username/password combination.")
             return False

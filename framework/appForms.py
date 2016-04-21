@@ -44,7 +44,8 @@ def createDateField(params):
     if 'default' in params:
         date = params['default']
         dateStr = datetime.date(
-            day=date['day'], month=date['month'], year=date['year']).strftime("%m/%d/%Y")
+            day=date['day'], month=date['month'],
+            year=date['year']).strftime("%m/%d/%Y")
         field = forms.CharField(
             required=params['required'], initial=dateStr, widget=wid)
     else:

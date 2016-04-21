@@ -1,7 +1,7 @@
 # team13
 15-437/15-637 repo for critcher
 
-Baseball App:
+##Baseball App:
 
 data_url = http://baseball-calendar-app.herokuapp.com/data/
 
@@ -10,7 +10,7 @@ settings_url = http://baseball-calendar-app.herokuapp.com/form/
 icon_url = http://baseball-calendar-app.herokuapp.com/static/icon.png
 
 
-Concert App:
+##Concert App:
 
 icon_url = https://concert-calendar-app.herokuapp.com/static/icon.png
 
@@ -19,7 +19,7 @@ settings_url = https://concert-calendar-app.herokuapp.com/form/
 data_url = https://concert-calendar-app.herokuapp.com/data/
 
 
-Movie App:
+##Movie App:
 
 icon_url = https://movie-calendar-app.herokuapp.com/static/icon.png
 
@@ -28,7 +28,7 @@ settings_url = https://movie-calendar-app.herokuapp.com/form/
 data_url = https://movie-calendar-app.herokuapp.com/data/
 
 
-Weather App:
+##Weather App:
 
 icon_url = https://weather-calendar-app.herokuapp.com/static/icon.png
 

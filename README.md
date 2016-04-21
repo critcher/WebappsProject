@@ -1,6 +1,9 @@
 # team13
 15-437/15-637 repo for critcher
 
+
+Below are some sample applications we have put on other heroku dynos to demonstrate interactions with real 3rd party Apps getting real data from public API's.
+
 ##Baseball App:
 
 data_url = http://baseball-calendar-app.herokuapp.com/data/

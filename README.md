@@ -2,7 +2,7 @@
 15-437/15-637 repo for critcher
 
 
-Below are some sample applications we have put on other heroku dynos to demonstrate interactions with real 3rd party Apps getting real data from public API's.
+Below are some sample applications we have put on other heroku dynos to demonstrate interactions with 3rd party Apps that pull real data from public API's based on user's parameters filled in the App's form.
 
 ##Baseball App:
 

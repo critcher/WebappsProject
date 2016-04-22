@@ -1,5 +1,5 @@
-# team13
-15-437/15-637 repo for critcher
+# team13 (Calendar With Stuff)
+https://calendarwithstuff.herokuapp.com
 
 
 Below are some sample applications we have put on other heroku dynos to demonstrate interactions with 3rd party Apps that pull real data from public API's based on user's parameters filled in the App's form.
